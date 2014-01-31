@@ -188,6 +188,6 @@ public class RenderEngine implements GLEventListener {
 	private Queue<String> texsToMake;	//Textures waiting to be made, since GLs exist only in the callbacks
 	private int width, height;		//Window width and height
 	
-	private static RenderEngine instance = new RenderEngine();
+	private static RenderEngine instance;
 
 }
