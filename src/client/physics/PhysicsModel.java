@@ -44,10 +44,10 @@ public class PhysicsModel implements Positionable, Movable, Rotatable {
 
 	@Override
 	public void rotateBy(Quaternion q) {
-		//I think you need to multiply them
-		ori.mult(q);
+		ori.mult(q);	//Multiply quaternions to get a new angle
 	}
 
+	//Physics information
 	private Vec3f loc;
 	private Quaternion ori;
 }

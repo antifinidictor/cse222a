@@ -23,6 +23,7 @@ import javax.media.opengl.glu.GLU;
 import shared.Box;
 import shared.Vec3f;
 
+import client.GameEngine;
 import client.physics.PhysicsModel;
 
 import com.jogamp.opengl.math.Quaternion;
@@ -31,6 +32,7 @@ import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
 
 public class RenderEngine implements GLEventListener {
+	
 	
 	private RenderEngine() {
 		//RenderEngine setup
@@ -43,19 +45,11 @@ public class RenderEngine implements GLEventListener {
         GLCanvas canvas = new GLCanvas(caps);
         canvas.addGLEventListener(this);
         
-		frame = new Frame("CSE 222A Wi14 Project");	//This title may not stick
-		frame.setSize(640, 480);
-		frame.add(canvas);
-		frame.setVisible(true);
+        Frame window = GameEngine.get().getWindow();
+        window.add(canvas);
+		window.setSize(640, 480);
+		window.setVisible(true);
 
-        // by default, an AWT Frame doesn't do anything when you click
-        // the close button; this bit of code will terminate the program when
-        // the window is asked to close
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
         
         animator = new FPSAnimator(canvas, 60);
         animator.start();
@@ -69,8 +63,14 @@ public class RenderEngine implements GLEventListener {
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
-
+		System.out.println("Disposing RenderEngine");
+	    GL2 gl = drawable.getGL().getGL2();
+		for(TextureInfo tex : textures) {
+			tex.getTexture().destroy(gl);
+		}
+		textures.clear();
+		models.clear();
+		System.out.println("RenderEngine disposed");
 	}
 
 	@Override
@@ -81,18 +81,11 @@ public class RenderEngine implements GLEventListener {
 	    //gl.glEnable(GL.GL_BLEND);
 	    //gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 	    
-	    gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color to black and opaque
-	    gl.glClearDepth(1.0f);                   // Set background depth to farthest
-	    gl.glEnable(GL.GL_DEPTH_TEST);   // Enable depth testing for z-culling
-	    gl.glDepthFunc(GL.GL_LEQUAL);    // Set the type of depth-test
+	    gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// Set background color to black and opaque
+	    gl.glClearDepth(1.0f);						// Set background depth to farthest
+	    gl.glEnable(GL.GL_DEPTH_TEST);				// Enable depth testing for z-culling
+	    gl.glDepthFunc(GL.GL_LEQUAL);				// Set the type of depth-test
 	    gl.glShadeModel(GL2.GL_SMOOTH);
-	    
-	    //Attempting to solve texture stretch glitch
-	    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
-	    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
 	}
 
 	@Override
@@ -119,16 +112,14 @@ public class RenderEngine implements GLEventListener {
         glu.destroy();
 	}
 
-	public void setFrameTitle(String title) {
-		frame.setTitle(title);
-	}
-	
 	public static RenderEngine get() {
-		if(instance == null) {
-			instance = new RenderEngine();
-		}
 		return instance;
 	}
+	
+	public static void init() {
+		instance = new RenderEngine();
+	}
+	
 	
 	//TODO: Test variables.  Remove them
 	private static float z = 0.f;
@@ -143,7 +134,7 @@ public class RenderEngine implements GLEventListener {
 	    if(hrm == null) {
 	    	int texID = makeTexture("res/grass.png");
 	    	pmdl = new PhysicsModel(new Vec3f(0.f, 0.f, -3.f), new Quaternion());
-	    	hrm = new HmapRenderModel("res/hmap.jpg", textures.get(texID), pmdl, new Box(-1, 0, -1, 2, 1, 2));
+	    	hrm = new HmapRenderModel("res/hmap.jpg", textures.get(texID), pmdl, new Box(-5, 0, -5, 10, 1, 10));
 	    	models.add(hrm);
 	    } else {
 	    	//pmdl.moveBy(new Vec3f(0.f, 0.f, -0.01f));
@@ -184,12 +175,14 @@ public class RenderEngine implements GLEventListener {
 		return texID;
 	}
 	
-	private Frame frame = null;
+	public void kill() {
+		animator.stop();
+	}
+	
 	private FPSAnimator animator;
 	private List<RenderModel> models;
-	private List<TextureInfo> textures;		//OpenGL textures are stored by ID
-	private Queue<String> texsToMake;	//Textures waiting to be made, since GLs exist only in the callbacks
-	private int width, height;		//Window width and height
+	private List<TextureInfo> textures;	//OpenGL textures are stored by ID
+	private int width, height;			//Window width and height
 	
 	private static RenderEngine instance;
 
