@@ -10,11 +10,11 @@ import javax.media.opengl.GLAutoDrawable;
 
 import shared.Box;
 import shared.Locatable;
-import shared.Vec3f;
+import shared.Positionable;
 
 public class HmapRenderModel implements RenderModel {
 	
-	public HmapRenderModel(String filename, TextureInfo tex, Locatable myPos, Box bounds) {
+	public HmapRenderModel(String filename, TextureInfo tex, Positionable myPos, Box bounds) {
 		this.myPos = myPos;
 		this.bounds = bounds;
 		this.tex = tex;
@@ -49,24 +49,31 @@ public class HmapRenderModel implements RenderModel {
 		//Translation, rotation
 		gl.glPushMatrix();
 		gl.glTranslatef(
-			myPos.pos().x + bounds.min.x,
-			myPos.pos().y + bounds.min.y,
-			myPos.pos().z + bounds.min.z
+			myPos.loc().x,
+			myPos.loc().y,
+			myPos.loc().z
 		);
-		//insert rotation here
+		gl.glMultMatrixf(myPos.ori().toMatrix(), 0);
+		gl.glTranslatef(
+			bounds.min.x,
+			bounds.min.y,
+			bounds.min.z
+		);
 		
 		//TODO: Figure out color and texture stuff
 	    gl.glColor4f(1.f, 1.f, 1.f, 0.f);
 	    tex.getTexture().bind(gl);
 	    //gl.glBindTexture(tex.getTexture().getTarget(), tex.getTexture().getTextureObject());
 
-	    float w = bounds.width() / (hmap.length - 1);  //x resolution (width of one unit)
-	    float l = bounds.length() / (hmap[0].length - 1);  //z resolution (length of one unit)
+	    float w = bounds.width() / (hmap.length - 1);		//x resolution (width of one unit)
+	    float l = bounds.length() / (hmap[0].length - 1);	//z resolution (length of one unit)
 	    for(int x = 0; x < hmap.length - 1; ++x) {
 	        gl.glBegin(gl.GL_TRIANGLE_STRIP);
+            
 	        for(int z = 0; z < hmap[0].length; z++) {
 	            float y0 = hmap[x][z];
 	            float y1 = hmap[x+1][z];
+	            
 	            gl.glTexCoord2f(x * w, z * l);
 	            gl.glVertex3f(x * w, y0, z * l);
 
@@ -80,7 +87,7 @@ public class HmapRenderModel implements RenderModel {
 		gl.glPopMatrix();
 	}
 
-	private Locatable myPos;
+	private Positionable myPos;
 	private float hmap[][];
 	private Box bounds;
 	private TextureInfo tex;

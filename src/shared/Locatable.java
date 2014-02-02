@@ -1,5 +1,5 @@
 package shared;
 
 public interface Locatable {
-	public Vec3f pos();
+	public Vec3f loc();
 }

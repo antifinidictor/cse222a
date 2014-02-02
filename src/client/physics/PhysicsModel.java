@@ -1,28 +1,53 @@
 package client.physics;
 
-import shared.Locatable;
+import com.jogamp.opengl.math.Quaternion;
+
 import shared.Movable;
+import shared.Positionable;
+import shared.Rotatable;
 import shared.Vec3f;
 
-public class PhysicsModel implements Locatable, Movable {
-	public PhysicsModel(Vec3f pos) {
-		this.pos = pos;
+public class PhysicsModel implements Positionable, Movable, Rotatable {
+	public PhysicsModel(final Vec3f loc, final Quaternion ori) {
+		this.loc = new Vec3f(loc);
+		this.ori = new Quaternion();
+		rotateTo(ori);
 	}
 
 	@Override
 	public void moveBy(final Vec3f shift) {
-		pos.add(shift);
+		loc.add(shift);
 	}
 
 	@Override
 	public void moveTo(final Vec3f pos) {
-		this.pos.copy(pos);
+		this.loc.copy(pos);
 	}
 
 	@Override
-	public Vec3f pos() {
-		return pos;
+	public Vec3f loc() {
+		return loc;
 	}
-	
-	private Vec3f pos;
+
+	@Override
+	public Quaternion ori() {
+		return ori;
+	}
+
+	@Override
+	public void rotateTo(Quaternion q) {
+		this.ori.setX(ori.getX());
+		this.ori.setY(ori.getY());
+		this.ori.setZ(ori.getZ());
+		this.ori.setW(ori.getW());
+	}
+
+	@Override
+	public void rotateBy(Quaternion q) {
+		//I think you need to multiply them
+		ori.mult(q);
+	}
+
+	private Vec3f loc;
+	private Quaternion ori;
 }

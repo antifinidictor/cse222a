@@ -13,6 +13,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
@@ -24,6 +25,7 @@ import shared.Vec3f;
 
 import client.physics.PhysicsModel;
 
+import com.jogamp.opengl.math.Quaternion;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
@@ -74,12 +76,23 @@ public class RenderEngine implements GLEventListener {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 	    GL2 gl = drawable.getGL().getGL2();
+
+	    gl.glEnable(GL.GL_TEXTURE_2D);
+	    //gl.glEnable(GL.GL_BLEND);
+	    //gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 	    
 	    gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color to black and opaque
 	    gl.glClearDepth(1.0f);                   // Set background depth to farthest
 	    gl.glEnable(GL.GL_DEPTH_TEST);   // Enable depth testing for z-culling
 	    gl.glDepthFunc(GL.GL_LEQUAL);    // Set the type of depth-test
-	    gl.glEnable(GL.GL_TEXTURE_2D);
+	    gl.glShadeModel(GL2.GL_SMOOTH);
+	    
+	    //Attempting to solve texture stretch glitch
+	    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+	    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
 	}
 
 	@Override
@@ -128,12 +141,14 @@ public class RenderEngine implements GLEventListener {
 	    
 	    //TODO: TEST- REMOVE!
 	    if(hrm == null) {
-	    	int texID = makeTexture("res/grass.jpg");
-	    	pmdl = new PhysicsModel(new Vec3f(0.f, 0.f, 0.f));
+	    	int texID = makeTexture("res/grass.png");
+	    	pmdl = new PhysicsModel(new Vec3f(0.f, 0.f, -3.f), new Quaternion());
 	    	hrm = new HmapRenderModel("res/hmap.jpg", textures.get(texID), pmdl, new Box(-1, 0, -1, 2, 1, 2));
 	    	models.add(hrm);
 	    } else {
-	    	pmdl.moveBy(new Vec3f(0.f, 0.f, -0.01f));
+	    	//pmdl.moveBy(new Vec3f(0.f, 0.f, -0.01f));
+	    	float[] axis = {0.f, 1.f, 0.f};
+	    	pmdl.rotateBy(new Quaternion(axis, (float) (Math.PI / 100.f)));
 	    }
 	    //TODO: END TEST
 	    
@@ -141,22 +156,6 @@ public class RenderEngine implements GLEventListener {
 	    for(RenderModel rmodel : models) {
 	    	rmodel.render(drawable);
 	    }
-	    
-	    /*
-	    //TODO: Test.  Remove it.
-	    // draw a triangle filling the window
-	    gl.glBegin(GL.GL_TRIANGLES);
-		    gl.glColor3f(1, 0, 0);
-		    gl.glVertex3f(-1, -1, z);
-		    
-		    gl.glColor3f(0, 1, 0);
-		    gl.glVertex3f(0, 1, z);
-		    
-		    gl.glColor3f(0, 0, 1);
-		    gl.glVertex3f(1, -1, z);
-	    gl.glEnd();
-	    z -= 0.01f;
-	    */
 	    
 	}
 	
@@ -168,7 +167,11 @@ public class RenderEngine implements GLEventListener {
 		//Return the id of this texture
 		int texID = -1;
 		try {
-			Texture tex = TextureIO.newTexture(new File(filename), false);
+			GL gl = GLContext.getCurrentGL();
+			Texture tex = TextureIO.newTexture(new File(filename), true);
+			tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+			tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+			
 			textures.add(new TextureInfo(tex, framesWide, framesHigh));
 			texID = textures.size() - 1;
 		} catch (GLException e) {
