@@ -2,18 +2,36 @@ package client;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
+import shared.Vec3f;
 import client.physics.PhysicsModel;
+import client.render.Camera;
+import client.render.FollowCamera;
+import client.render.RenderEngine;
 import client.render.RenderModel;
+
+import com.jogamp.opengl.math.Quaternion;
 
 /**
  * A class that handles player input and update events
  * @author Nathan Heisey
  *
  */
-public class Player implements GameObject, KeyListener {
-	public Player() {
+public class Player implements GameObject, KeyListener, MouseMotionListener, MouseListener {
+	public Player(final Vec3f loc, final Quaternion ori) {
+		pmdl = new PhysicsModel(loc, ori);
+		camera = new FollowCamera(pmdl);
+
 		GameEngine.get().getWindow().addKeyListener(this);
+		RenderEngine.get().getCanvas().addMouseMotionListener(this);
+		RenderEngine.get().getCanvas().addMouseListener(this);
+		RenderEngine.get().setCamera(camera);
+		
+		float [] axis = {0.f, 1.f, 0.f};
+		pmdl.rotateTo(new Quaternion(axis, (float)Math.PI / 4));
 	}
 
 	@Override
@@ -28,27 +46,119 @@ public class Player implements GameObject, KeyListener {
 
 	@Override
 	public void onUpdate() {
+		camera.moveRelative(new Vec3f(strafeSpeed, 0.f, forwardSpeed));
+
+    	//float[] axis = {0.f, 1.f, 0.f};
+    	//pmdl.rotateBy(new Quaternion(axis, (float) (Math.PI / 250.f)));
 	}
 	
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+	public void keyPressed(KeyEvent ekey) {
 		
+		switch(ekey.getKeyCode()) {
+		case KeyEvent.VK_W:
+			forwardSpeed = -MOVE_SPEED;
+			break;
+		case KeyEvent.VK_A:
+			strafeSpeed = -MOVE_SPEED;
+			break;
+		case KeyEvent.VK_S:
+			forwardSpeed = MOVE_SPEED;
+			break;
+		case KeyEvent.VK_D:
+			strafeSpeed = MOVE_SPEED;
+			break;
+		default:
+			System.out.println("Unrecognized key pressed");
+		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void keyReleased(KeyEvent ekey) {
+		switch(ekey.getKeyCode()) {
+		case KeyEvent.VK_W:
+			forwardSpeed = 0.f;
+			break;
+		case KeyEvent.VK_A:
+			strafeSpeed = 0.f;
+			break;
+		case KeyEvent.VK_S:
+			forwardSpeed = 0.f;
+			break;
+		case KeyEvent.VK_D:
+			strafeSpeed = 0.f;
+			break;
+		default:
+			System.out.println("Unrecognized key pressed");
+		}
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
+	}
+
+
+	@Override
+	public void mouseDragged(MouseEvent emouse) {
+		// TODO Auto-generated method stub
+		float x = (emouse.getX() - 320.f) / 320.f * (float)Math.PI;
+		float y = emouse.getY();
+		float [] axis = {0.f, 1.f, 0.f};
+		Quaternion xquat = new Quaternion(axis, x);
+		pmdl.rotateTo(xquat);
+		System.out.println("Mouse dragged");
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent emouse) {
+		System.out.println("Mouse moved");
+	}
+	
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		GameEngine.get().getWindow().addKeyListener(this);
+		System.out.println("Mouse clicked");
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println("Mouse entered");
 		
 	}
 
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println("Mouse exited");
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println("Mouse pressed");
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println("Mouse released");
+		
+	}
+	
+	private float forwardSpeed;
+	private float strafeSpeed;
+	private float xrot;
+	private float yrot;
+
 	private PhysicsModel pmdl;
 	private RenderModel  rmdl;
+	private Camera camera;
+	
+	private static final float MOVE_SPEED = 0.05f;
+
 }

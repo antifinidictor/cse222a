@@ -1,0 +1,37 @@
+TODO
+    CSE 202 hw          
+    CSE 222a paper      x
+    CSE 222a proposal   
+    CSE 227 papers      
+    CSE 292 report      x
+    
+    
+222a paper notes
+    Assumptions on traffic flows: That massive fluxes in traffic do not change in smaller scales than multisecond intervals
+    Paper sounds like it used both a physical setup and a simulation, need to verify.
+    Provides 1:1 bisection bw, but it sounds like some of that bw is actually shared among all the pods in such a way that it can be transferred to who needs it?
+    
+    Debouncing: One cause for performance problems.  When a new port is plugged in, the link oscillates or goes up and down or something.  SW handling this case waits 2 seconds before acting on data received over a new link, but HELIOS plugs/unplugs ports frequently.  By disabling debouncing, they got better performance, but not as good as they expected.
+    
+    Question: Are they actually physically disconnecting/reconnecting ports?
+    
+
+Contributions
+    The authors present the HELIOS data center network architecture, a hybrid optical-electrical system that aims to reduce the cabling requirements of common worst-case full bandwidth systems like those described in the previous two papers.  While the previous designs offer full bisection bandwidth to all hosts in the system, the authors observed that this is far more than is needed for the amortized case; generally, only part of the network is active, and much of the available bandwidth is wasted.  The authors compensate for this by providing a mix of optical circuit switches and electrical packet switches connecting the pods.  The optical circuits are good at handling longer-lasting dense flows between pods, but take milliseconds to switch between destinations.  Traditional electric packet switches are great at delivering all-to-all bandwidth in bursts, but use enormous amounts of power and may lose bandwidth as traffic increases.  Half of the bandwidth is 'shared' via the packet switches and the other half is 'allocated' to particular interpod communication lines via the optical switches.  The authors' design aims to have variable connections, with electric packet switches offering full connectivity at the expense of bandwidth while optical circuit switches provide mobile connections that are placed between the pods that need it most.  This dynamic connection model is meant to provide amortized full bisection bandwidth instead of the continuous, static, and partially used full bisection bandwidth presented by designs like PortLand.
+
+Shortcomings
+The most important shortcoming presented by the authors is the assumption that large scale traffic does not change destinations smaller than multisecond intervals.  They do not pretend that this is a valid assumption for all traffic models, but rather present it as a limitation of their design.  It is entirely possible that for many traffic scenarios, this limitation is hardly an issue; however, for data centers renting their services to a mix of users, this assumption could well prove fatal to their business.  They would have to make it clear to their customers that heavy, bursty loads of traffic that switches quickly would get sub-optimal throughput; customers would have to be very sure of the types of traffic load they generate before they accept such a limitation (given that their load may be dependent on the behavior of their own clients, they might have trouble predicting usage).  I would think that data center owners would have to offer their services at cheaper-than-market rates in order to attract customers.
+It is important to note that their design does not achieve the throughput of a full-bisection bandwidth model even in the best case situations.  This is understandable, as they don't exactly offer continuous full bisection bandwidth, but rather share the electric bandwidth among all services for volatile bursty traffic, while continuous heavy traffic waits to be moved to the optical switches before it gets the bandwidth it needs.  I expect this switch time is the cause of the dips in traffic throughput demonstrated on their graphs: the time it takes for the network to notice a change in load, and then to provide an optical switch to support it.  I am unsure of whether this is a significant shortcoming or not, given that they aimed to build a data center network with a smaller connection overhead; perhaps the benefits of fewer cables and lower power overcomes the slightly smaller throughput?  I think that a full size data center would have to be built and run with real traffic before the full implications of this limitation are apparent.
+I was annoyed to notice that the paper does not really go into detail about the algorithm they used to route traffic and assign optical connections.  They mentioned using Edmond's algorithm, but didn't even provide a brief explanation of what it was.  I suppose it wasn't the focus of the paper, but I think providing an explanation on this score would have added a lot to their argument.
+
+Implications
+While this isn't the only design of its kind, it appears to be the first hybrid model that does not require specialized equipment (if I understood their reference to "On the Feasibility of Optical Circuit Switching for High Performance Computing Systems").  This is similar to the PortLand paper and its predecessor, which have attempted to construct a network with full bisection bandwidth from commodity hardware- except this system uses a mix of optical and electrical switches, which appears to make the design more expensive.  It is unclear to me whether this particular design would have an impact or not; while it certainly appears to achieve the desired results in certain cases, the limitations of the optical switching speed could be a significant problem moving forward.  If I were to guess, I would say that this design has too many shortcomings to be widely adopted.
+However, the new research being performed in low-power silicon optics may well be a saving grace for this design.  If optics research continues and finds ways to create faster switches (and optimizations to deal with the debouncing delay, so this feature does not need to be disabled) I would imagine that this design would become more attractive to future data centers.  I would guess the customers would prefer to not know about specific limitations and capabilities of the data centers their servers are running in; when optics technology allows data centers to completely hide the facets of this architecture, it may well take off.  I also expect this paper would start a wave of research into this topic, since it looks to me like it tripped at the three-quarter mark between failure and success.  While HELIOS does not look especially promising with the technology discussed, its successors may well be exactly what a massive data center needs to save connectivity and power while preserving bandwidth.
+
+i  j  k
+x1 y1 z1
+x2 y2 z2
+
+y1 * z2 - z1 * y2
+z1 * x2 - x1 * z2
+x1 * y2 - y1 * x2

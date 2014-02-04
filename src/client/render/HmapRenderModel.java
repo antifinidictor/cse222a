@@ -46,24 +46,28 @@ public class HmapRenderModel implements RenderModel {
 	public void render(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		
-		//Translation, rotation
+		//Translation to rotation center
 		gl.glPushMatrix();
 		gl.glTranslatef(
-			myPos.loc().x,
-			myPos.loc().y,
-			myPos.loc().z
-		);
-		gl.glMultMatrixf(myPos.ori().toMatrix(), 0);
-		gl.glTranslatef(
-			bounds.min.x,
-			bounds.min.y,
-			bounds.min.z
+			myPos.loc().x(),
+			myPos.loc().y(),
+			myPos.loc().z()
 		);
 		
-		//TODO: Figure out color and texture stuff
-	    gl.glColor4f(1.f, 1.f, 1.f, 0.f);
+		//Rotation
+		gl.glMultMatrixf(myPos.ori().toMatrix(), 0);
+		
+		//Translation to hmap corner
+		gl.glTranslatef(
+			bounds.min.x(),
+			bounds.min.y(),
+			bounds.min.z()
+		);
+		
+		//Color?
+	    //gl.glColor4f(1.f, 1.f, 1.f, 0.f);
+		gl.glColor3f(1.f, 1.f, 1.f);
 	    tex.getTexture().bind(gl);
-	    //gl.glBindTexture(tex.getTexture().getTarget(), tex.getTexture().getTextureObject());
 
 	    float w = bounds.width() / (hmap.length - 1);		//x resolution (width of one unit)
 	    float l = bounds.length() / (hmap[0].length - 1);	//z resolution (length of one unit)
