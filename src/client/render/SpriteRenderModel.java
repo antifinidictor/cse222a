@@ -45,22 +45,26 @@ public class SpriteRenderModel implements RenderModel {
 			loc.z()
 		);
 		gl.glMultMatrixf(ori.toMatrix(), 0);
+
+		
+		float frameWidth = tex.getTexture().getWidth() / tex.getFramesWide();
+		float frameHeight = tex.getTexture().getWidth() / tex.getFramesWide();
+		float width  = widthScale * frameWidth / frameHeight;
+		float height = heightScale;
+		
 		gl.glTranslatef(
-			offset.x(),
-			offset.y(),
+			offset.x() - width / 2.f,
+			offset.y() - height / 2.f,
 			offset.z()
 		);
 		
 		//Texture coordinates
-	    float texLeft   = frameW * 1.0F / tex.getFramesWide(),
-	          texTop    = frameH * 1.0F / tex.getFramesHigh(),
-	          texRight  = frameW * 1.0F / tex.getFramesWide() + 1.0F / tex.getFramesWide(),
-	          texBottom = frameH * 1.0F / tex.getFramesHigh() + 1.0F / tex.getFramesHigh();
-		
+	    float texLeft   = (frameW * 1.0f) / tex.getFramesWide(),
+	          texTop    = (frameH + 1.0f) / tex.getFramesHigh(),
+	          texRight  = (frameW + 1.0f) / tex.getFramesWide(),
+	          texBottom = (frameH * 1.0f) / tex.getFramesHigh();
+
 		tex.getTexture().bind(gl);
-		
-		float width  = widthScale * tex.getTexture().getAspectRatio();
-		float height = heightScale;
 
 		gl.glBegin(GL2.GL_QUADS);
 	        //Top-left vertex (corner)
@@ -99,6 +103,8 @@ public class SpriteRenderModel implements RenderModel {
 			this.frameH = frameH;
 		}
 	}
+	
+	public TextureInfo getTexInfo() { return tex; }
 	
 	private int frameW, frameH;
 	private Positionable myPos;

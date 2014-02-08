@@ -76,7 +76,7 @@ public class GameEngine {
 	 */
 	public void buildWorld() {
 		float [] axis = {0.f, 1.f, 0.f};
-		Player player = new Player(new Vec3f(0.f, 0.f, 0.f), new Quaternion(axis, 0.f));
+		Player player = new Player(new Vec3f(1.f, 0.f, 0.f), new Quaternion(axis, 0.f));
 		add(player);
 
     	int texID = RenderEngine.get().makeTexture("res/grass.png");
@@ -89,17 +89,25 @@ public class GameEngine {
 		testLandscape = new Landscape(
 				"res/hmap.jpg",
 				RenderEngine.get().getTexture(texID),
-				new Box(-15, 0, -5, 10, 1, 10)
+				new Box(-15, -1, -5, 10, 1, 10)
 			);
 		add(testLandscape);
 		
 		texID = RenderEngine.get().makeTexture("res/ball.png");
 		Ball ball = new Ball(
-			new Vec3f(0.f, .5f, -3.f),
+			new Vec3f(0.f, 1.f, 0.f),
 			.5f,	//radius
 			RenderEngine.get().getTexture(texID)
 		);
 		add(ball);
+		
+		texID = RenderEngine.get().makeTexture("res/magus.png", 4, 20);
+		NetworkPlayer netPlayer = new NetworkPlayer(
+			new Vec3f(0.f, .5f, 3.f),
+			new Quaternion(),
+			RenderEngine.get().getTexture(texID)
+		);
+		add(netPlayer);
 	}
 	
 	public static void init() { instance = new GameEngine(); }

@@ -16,7 +16,7 @@ public class Ball implements GameObject {
 		rmdl = new SpriteRenderModel(pmdl, centerOffset, tex);
 		rmdl.setHeightScale(radius * 2.f);
 		rmdl.setWidthScale(radius * 2.f);
-		SphereCollisionModel cmdl = new SphereCollisionModel(centerOffset, radius / 2.f);
+		SphereCollisionModel cmdl = new SphereCollisionModel(centerOffset, radius);
 		pmdl.setCollision(cmdl);
 	}
 

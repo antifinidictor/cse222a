@@ -17,7 +17,7 @@ public class PhysicsModel implements Mobile {
 		
 		//These values could be dynamic
 		mass = 1.f;
-		frictionDivider = 0.5f;
+		frictionDivider = 0.9f;
 	}
 	
 	public PhysicsModel(final Vec3f loc, final Quaternion ori) {

@@ -23,6 +23,7 @@ import com.jogamp.opengl.math.Quaternion;
  */
 public class Player implements GameObject, KeyListener, MouseMotionListener, MouseListener {
 	public Player(final Vec3f loc, final Quaternion ori) {
+		float radius = 0.5f;
 		pmdl = new PhysicsModel(loc, ori);
 		camera = new FollowCamera(pmdl);
 
@@ -32,11 +33,12 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		RenderEngine.get().setCamera(camera);
 		
 		CapsuleCollisionModel cmdl = new CapsuleCollisionModel(
-			new Vec3f(0.f,-.5f,0.f),	//Player's feet are 1.5m below the camera
+			new Vec3f(0.f,-radius,0.f),	//Player's feet are 1.5m below the camera
 			new Vec3f(0.f,0.f,0.f),
-			0.5f
+			radius
 		);
 		pmdl.setCollision(cmdl);
+		rmdl = null;
 	}
 
 	@Override
@@ -179,6 +181,6 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 	private RenderModel  rmdl;
 	private Camera camera;
 	
-	private static final float MOVE_SPEED = 0.05f;
+	private static final float MOVE_SPEED = 0.01f;
 
 }
