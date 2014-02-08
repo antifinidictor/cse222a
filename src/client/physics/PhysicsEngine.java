@@ -166,7 +166,8 @@ public class PhysicsEngine {
 		if(!sphereMdl.onSurface()) {
 			Vec3f normal = hcmdl.getNormalAt(center);
 			normal.normalizeTo(gravityMagnitude);
-			sphereMdl.applyForce(normForce);	//For now, just stop them from falling
+			//System.out.println("Normal = (" + normal.x() + "," + normal.y() + "," + normal.z() + ")");
+			sphereMdl.applyForce(normal);	//For now, just stop them from falling
 			sphereMdl.setOnSurface(true);
 		}
 	}
