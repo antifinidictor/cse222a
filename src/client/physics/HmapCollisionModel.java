@@ -46,7 +46,7 @@ public class HmapCollisionModel implements CollisionModel {
 	    float zDiff = (minZ == maxZ) ? 0.5f : (maxZ - z) / (maxZ - minZ);
 	    float interp = zDiff * xInterpMinZ + (1 - zDiff) * xInterpMaxZ;
 		
-		return interp + bounds.min.y();
+		return interp + bounds.min.y() + myPos.loc().y();
 	}
 	
 	public Vec3f getNormalAt(final Vec3f pos) {
@@ -77,12 +77,12 @@ public class HmapCollisionModel implements CollisionModel {
 	    float zPrime = maxX - x + minZ;
 	    Vec3f v1;
 	    Vec3f v2;
-	    if(zPrime < z) {
-		    v1 = new Vec3f(maxX - minX, y10 - y00, 0.f);
-		    v2 = new Vec3f(0.f,         y01 - y00, maxZ - minZ);
+	    if(zPrime < z) {	//TODO: The triangles are determined correctly, but not the normals
+		    v1 = new Vec3f(0.f,         y01 - y00, maxZ - minZ);
+		    v2 = new Vec3f(maxX - minX, y10 - y00, 0.f);
 	    } else {
-		    v1 = new Vec3f(maxX - minX, y11 - y01, 0.f);
-		    v2 = new Vec3f(maxX - minX, y10 - y01, maxZ - minZ);
+		    v1 = new Vec3f(0.f,         y10 - y11, minZ - maxZ);
+		    v2 = new Vec3f(minX - maxX, y01 - y11, 0.f);
 	    }
 	    Vec3f normal = Vec3f.cross(v1, v2);
 	    normal.normalize();

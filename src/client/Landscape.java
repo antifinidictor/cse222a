@@ -20,9 +20,6 @@ public class Landscape implements GameObject {
 		rmdl = new HmapRenderModel(filename, tex, pmdl, relativeBounds);
 		HmapCollisionModel cmdl = new HmapCollisionModel(rmdl.getHmap(), relativeBounds);
 		pmdl.setCollision(cmdl);
-		
-		//TODO: Test- remove.
-		rmdl.temp = cmdl;
 	}
 
 	@Override

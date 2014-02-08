@@ -110,11 +110,19 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 	@Override
 	public void mouseDragged(MouseEvent emouse) {
 		// TODO Auto-generated method stub
-		float x = (emouse.getX() - 320.f) / 320.f * (float)Math.PI;
-		float y = emouse.getY();
+		float x = (emouse.getX() - lastCamX) / 640.f * (float)Math.PI;
+		float y = (emouse.getY() - lastCamY) / 640.f * (float)Math.PI;
+		lastCamX = emouse.getX();
+		lastCamY = emouse.getY();
+		
 		float [] axis = {0.f, 1.f, 0.f};
 		Quaternion xquat = new Quaternion(axis, x);
-		pmdl.rotateTo(xquat);
+		pmdl.rotateBy(xquat);
+		
+		axis[0] = 1.f;
+		axis[1] = 0.f;
+		Quaternion yquat = new Quaternion(axis, y);
+		pmdl.rotateBy(yquat);
 		//System.out.println("Mouse dragged");
 	}
 
@@ -148,6 +156,8 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		//System.out.println("Mouse pressed");
+		lastCamX = arg0.getX();
+		lastCamY = arg0.getY();
 	}
 
 	@Override
@@ -161,6 +171,9 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 	private float strafeSpeed;
 	private float xrot;
 	private float yrot;
+	
+	private float lastCamX;
+	private float lastCamY;
 
 	private PhysicsModel pmdl;
 	private RenderModel  rmdl;

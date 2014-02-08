@@ -90,7 +90,22 @@ public class HmapRenderModel implements RenderModel {
 	        }
 	        gl.glEnd();
 	    }
-	    /*    
+/*
+	    //TODO: Tests- remove
+	    //Draw triangle grid
+        gl.glColor3f(0.f, 1.f, 0.f);
+        gl.glBegin(GL.GL_LINE_STRIP);
+	    for(int x = 0; x < hmap.length - 1; ++x) {
+	        for(int z = 0; z < hmap[0].length; z++) {
+	            float y0 = hmap[x][z];
+	            float y1 = hmap[x+1][z];
+	            
+	            gl.glVertex3f(x * w, y0, z * l);
+	            gl.glVertex3f(x * w + w, y1, z * l);
+	        }
+	    }
+        gl.glEnd();
+	    
 	    //Draw collision box
 	    gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
 	    gl.glBegin(GL.GL_LINE_LOOP);
@@ -118,54 +133,11 @@ public class HmapRenderModel implements RenderModel {
         	gl.glVertex3f(0.f,            0.f,             bounds.length());
 	    	gl.glVertex3f(0.f,            bounds.height(), bounds.length());
 	    gl.glEnd();
-	    */
-	    //TODO: Test drawing surface normals- remove.
-	    if(temp != null) {
-	    	if(shift >= w) {
-	    		shift = -w;
-	    	} else {
-	    		shift += 0.001f;
-	    	}
-	    	float xStart = w / 2.f + shift;
-	    	float zStart = l / 2.f;
-	    	Vec3f drawLoc = new Vec3f(0.f, 0.f, 0.f);
-	    	Vec3f testLoc = new Vec3f(0.f, 0.f, 0.f);
-			gl.glLineWidth(5.f);
-			gl.glBegin(GL.GL_LINES);
-    		for(int x = 0; x < hmap.length - 1; ++x) {
-	        	testLoc.x(xStart + x * w + myPos.loc().x() + bounds.min.x());
-    	        for(int z = 0; z < hmap[0].length; z++) {
-    	        	testLoc.z(zStart + z * l + myPos.loc().z() + bounds.min.z());
-	        		float y = temp.getHeightAt(testLoc) + bounds.height() / 2.f;
-	        		Vec3f normal = temp.getNormalAt(testLoc);
-	        		normal.normalizeTo(-.25f);
-        			drawLoc.x(xStart + x * w);
-	        		drawLoc.z(zStart + z * l);
-	        		drawLoc.y(y);
-
-	        		gl.glColor3f(1.f, 0.f, 0.f);
-	        		gl.glVertex3f(drawLoc.x(), drawLoc.y(), drawLoc.z());
-	        		
-	        		
-	        		drawLoc.add(normal);
-	        		gl.glColor3f(0.f, 0.f, 1.f);
-	        		gl.glVertex3f(drawLoc.x(), drawLoc.y(), drawLoc.z());
-    	        }
-    		}
-    		gl.glEnd();
-    		gl.glColor3f(1.f, 1.f, 1.f);
-	    }
+*/
 	    
 		//Undo matrix changes made for this object
 		gl.glPopMatrix();
 	}
-	
-	
-	//TODO: Test drawing surface normals- remove.
-	int timer = 0;
-	float shift = 0.f;
-	final int MAX_TIME = 100;
-	public HmapCollisionModel temp = null;
 
 	private Positionable myPos;
 	private float hmap[][];

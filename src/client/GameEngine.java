@@ -83,7 +83,7 @@ public class GameEngine {
 		Landscape testLandscape = new Landscape(
 			"res/hmap.jpg",
 			RenderEngine.get().getTexture(texID),
-			new Box(-5, 0, -5, 10, 2, 10)
+			new Box(-5, -1, -5, 10, 2, 10)
 		);
 		add(testLandscape);
 		testLandscape = new Landscape(
