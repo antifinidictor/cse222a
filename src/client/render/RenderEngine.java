@@ -73,6 +73,10 @@ public class RenderEngine implements GLEventListener {
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		if(uninitialized) {
+			uninitialized = false;
+			GameEngine.get().buildWorld();
+		}
 		render(drawable);
 
 	}
@@ -127,6 +131,15 @@ public class RenderEngine implements GLEventListener {
         glu.gluPerspective(45.0f, aspect, 0.1f, 10.f);
         glu.destroy();
 	}
+	
+	public boolean add(RenderModel rmdl) {
+		//We'll worry about sorting it later
+		return models.add(rmdl);
+	}
+	
+	public boolean remove(RenderModel rmdl) {
+		return models.remove(rmdl);
+	}
 
 	public static RenderEngine get() {
 		return instance;
@@ -136,12 +149,10 @@ public class RenderEngine implements GLEventListener {
 		instance = new RenderEngine();
 	}
 	
+	public Camera getCamera() {
+		return camera;
+	}
 	
-	//TODO: Test variables.  Remove them
-	private static float z = 0.f;
-	private HmapRenderModel hrm = null;
-	private PhysicsModel pmdl = null;
-	private Player player = null;
 	
 	private void render(GLAutoDrawable drawable) {
 	    GL2 gl = drawable.getGL().getGL2();
@@ -159,25 +170,8 @@ public class RenderEngine implements GLEventListener {
 			);
 	    }
 	    
-	    //TODO: TEST- REMOVE!
-	    if(hrm == null) {
-	    	int texID = makeTexture("res/grass.png");
-	    	pmdl = new PhysicsModel(new Vec3f(0.f, 0.f, -3.f), new Quaternion());
-	    	hrm = new HmapRenderModel("res/hmap.jpg", textures.get(texID), pmdl, new Box(-5, 0, -5, 10, 1, 10));
-	    	models.add(hrm);
-	    	float [] axis = {0.f, 1.f, 0.f};
-	    	//FullCamera cam = new FullCamera(new Vec3f(0.f, 0.f, 0.f), new Quaternion(axis, 0.f));
-	    	//setCamera(cam);
-	    	player = new Player(new Vec3f(0.f, 0.f, 0.f), new Quaternion(axis, 0.f));
-	    } else {
-	    	//pmdl.moveBy(new Vec3f(0.f, 0.f, -0.01f));
-	    	float[] axis = {0.f, 1.f, 0.f};
-	    	//pmdl.rotateBy(new Quaternion(axis, (float) (Math.PI / 100.f)));
-	    	//camera.rotateBy(new Quaternion(axis, (float) (Math.PI / 250.f)));
-	    	//camera.moveRelative(new Vec3f(0.f, 0.f, -0.01f));
-	    	player.onUpdate();
-	    }
-	    //TODO: END TEST
+	    //Call GameEngine update
+	    GameEngine.get().update();
 	    
 	    //Render objects
 	    for(RenderModel rmodel : models) {
@@ -215,6 +209,10 @@ public class RenderEngine implements GLEventListener {
 		return texID;
 	}
 	
+	public TextureInfo getTexture(int texID) {
+		return textures.get(texID);
+	}
+	
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
@@ -231,6 +229,7 @@ public class RenderEngine implements GLEventListener {
 	private int width = 0, height = 0;			//Window width and height
 	private Camera camera = null;
 	private GLCanvas canvas;
+	private boolean uninitialized = true;
 	
 	private static RenderEngine instance;
 

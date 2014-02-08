@@ -6,9 +6,10 @@ import shared.Vec3f;
 import com.jogamp.opengl.math.Quaternion;
 
 public class PhysicsModel implements Mobile {
-	public PhysicsModel(final Vec3f loc, final Quaternion ori) {
+	public PhysicsModel(final Vec3f loc, final Quaternion ori, boolean isDynamic) {
 		this.loc = new Vec3f(loc);
 		this.ori = new Quaternion();
+		this.isDynamic = isDynamic;
 		rotateTo(ori);
 		
 		vel = new Vec3f(0.f, 0.f, 0.f);
@@ -17,6 +18,10 @@ public class PhysicsModel implements Mobile {
 		//These values could be dynamic
 		mass = 1.f;
 		frictionDivider = 0.5f;
+	}
+	
+	public PhysicsModel(final Vec3f loc, final Quaternion ori) {
+		this(loc, ori, true);
 	}
 
 	@Override
@@ -73,7 +78,18 @@ public class PhysicsModel implements Mobile {
 	    accel = new Vec3f(0.f, 0.f, 0.f);
 	}
 	
-	float getMass() { return mass; }
+	public float getMass() { return mass; }
+	
+	public boolean isDynamic() { return isDynamic; }
+	
+	public CollisionModel getCollision() { return cmdl; }
+	public void setCollision(CollisionModel cmdl) {
+		cmdl.setPositionable(this);
+		this.cmdl = cmdl;
+	}
+	
+	public boolean onSurface() { return onSurface; }
+	public void setOnSurface(boolean onSurface) { this.onSurface = onSurface; }
 	
 	//Physics information
 	private float mass;
@@ -82,4 +98,7 @@ public class PhysicsModel implements Mobile {
 	private Vec3f accel;
 	private Vec3f loc;
 	private Quaternion ori;
+	private boolean isDynamic;
+	private CollisionModel cmdl;
+	private boolean onSurface;
 }

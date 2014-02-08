@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
@@ -32,7 +33,7 @@ public class HmapRenderModel implements RenderModel {
 			for(int i = 0; i < w; ++i) {
 				for(int j = 0; j < h; ++j) {
 					//Convert from RGB color to heightmap value.  Max RGB color is 0xFFFFFF if no alpha channel
-					hmap[i][j] = img.getRGB(i, j) * bounds.height() / 0xFFFFFF;
+					hmap[i][j] = img.getRGB(i, j) * bounds.height() / 0x00FFFFFF + bounds.height();
 				}
 			}
 		} catch (IOException e) {
@@ -41,6 +42,8 @@ public class HmapRenderModel implements RenderModel {
 			hmap = new float[DEFAULT_HMAP_SIZE][DEFAULT_HMAP_SIZE];
 		}
 	}
+	
+	public float[][] getHmap() { return hmap; }
 
 	@Override
 	public void render(GLAutoDrawable drawable) {
@@ -86,7 +89,35 @@ public class HmapRenderModel implements RenderModel {
 	        }
 	        gl.glEnd();
 	    }
-		
+	    /*
+	    //Draw collision box
+	    gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
+	    gl.glBegin(GL.GL_LINE_LOOP);
+        	gl.glVertex3f(0.f,            0.f,             0.f);
+        	gl.glVertex3f(bounds.width(), 0.f,             0.f);
+        	gl.glVertex3f(bounds.width(), 0.f,             bounds.length());
+        	gl.glVertex3f(0.f,            0.f,             bounds.length());
+	    gl.glEnd();
+	    gl.glBegin(GL.GL_LINE_LOOP);
+	    	gl.glVertex3f(0.f,            bounds.height(), 0.f);
+	    	gl.glVertex3f(bounds.width(), bounds.height(), 0.f);
+	    	gl.glVertex3f(bounds.width(), bounds.height(), bounds.length());
+	    	gl.glVertex3f(0.f,            bounds.height(), bounds.length());
+	    gl.glEnd();
+	    gl.glBegin(GL.GL_LINES);
+		    gl.glVertex3f(0.f,            0.f,             0.f);
+	    	gl.glVertex3f(0.f,            bounds.height(), 0.f);
+
+        	gl.glVertex3f(bounds.width(), 0.f,             0.f);
+	    	gl.glVertex3f(bounds.width(), bounds.height(), 0.f);
+
+        	gl.glVertex3f(bounds.width(), 0.f,             bounds.length());
+	    	gl.glVertex3f(bounds.width(), bounds.height(), bounds.length());
+
+        	gl.glVertex3f(0.f,            0.f,             bounds.length());
+	    	gl.glVertex3f(0.f,            bounds.height(), bounds.length());
+	    gl.glEnd();
+		*/
 		//Undo matrix changes made for this object
 		gl.glPopMatrix();
 	}

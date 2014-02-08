@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import shared.Vec3f;
+import client.physics.CapsuleCollisionModel;
 import client.physics.PhysicsModel;
 import client.render.Camera;
 import client.render.FollowCamera;
@@ -30,8 +31,12 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		RenderEngine.get().getCanvas().addMouseListener(this);
 		RenderEngine.get().setCamera(camera);
 		
-		float [] axis = {0.f, 1.f, 0.f};
-		pmdl.rotateTo(new Quaternion(axis, (float)Math.PI / 4));
+		CapsuleCollisionModel cmdl = new CapsuleCollisionModel(
+			new Vec3f(0.f,-.5f,0.f),	//Player's feet are 1.5m below the camera
+			new Vec3f(0.f,0.f,0.f),
+			0.5f
+		);
+		pmdl.setCollision(cmdl);
 	}
 
 	@Override
@@ -46,7 +51,9 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 
 	@Override
 	public void onUpdate() {
-		camera.moveRelative(new Vec3f(strafeSpeed, 0.f, forwardSpeed));
+		//camera.moveRelative(new Vec3f(strafeSpeed, 0.f, forwardSpeed));
+		float [] vec = {strafeSpeed, 0.f, forwardSpeed};
+		pmdl.applyForce(new Vec3f(pmdl.ori().mult(vec)));
 
     	//float[] axis = {0.f, 1.f, 0.f};
     	//pmdl.rotateBy(new Quaternion(axis, (float) (Math.PI / 250.f)));
@@ -108,45 +115,45 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		float [] axis = {0.f, 1.f, 0.f};
 		Quaternion xquat = new Quaternion(axis, x);
 		pmdl.rotateTo(xquat);
-		System.out.println("Mouse dragged");
+		//System.out.println("Mouse dragged");
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent emouse) {
-		System.out.println("Mouse moved");
+		//System.out.println("Mouse moved");
 	}
 	
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		GameEngine.get().getWindow().addKeyListener(this);
-		System.out.println("Mouse clicked");
+		//System.out.println("Mouse clicked");
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		System.out.println("Mouse entered");
+		//System.out.println("Mouse entered");
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		System.out.println("Mouse exited");
+		//System.out.println("Mouse exited");
 		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		System.out.println("Mouse pressed");
+		//System.out.println("Mouse pressed");
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		System.out.println("Mouse released");
+		//System.out.println("Mouse released");
 		
 	}
 	

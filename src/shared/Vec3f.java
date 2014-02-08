@@ -41,19 +41,20 @@ public class Vec3f {
 		}
 	}
 	
-	public float dot(final Vec3f src) {
+	public static float dot(final Vec3f src1, final Vec3f src2) {
 		float dotProduct = 0.f;
-		float [] srcVector = src.toVector();
+		float [] srcVector1 = src1.toVector();
+		float [] srcVector2 = src2.toVector();
 		for(int i = 0; i < 3; ++i) {
-			dotProduct += vec[i] * srcVector[i];
+			dotProduct += srcVector1[i] * srcVector2[i];
 		}
 		return dotProduct;
 	}
 	
-	public Vec3f cross(final Vec3f src) {
-		float x = y() * src.z() - z() * src.y();
-		float y = z() * src.x() - x() * src.z();
-		float z = x() * src.y() - y() * src.x();
+	public static Vec3f cross(final Vec3f src1, final Vec3f src2) {
+		float x = src1.y() * src2.z() - src1.z() * src2.y();
+		float y = src1.z() * src2.x() - src1.x() * src2.z();
+		float z = src1.x() * src2.y() - src1.y() * src2.x();
 		Vec3f crossProduct = new Vec3f(x,y,z);
 		return crossProduct;
 	}
@@ -74,6 +75,10 @@ public class Vec3f {
 	
 	public void normalize() {
 		scale(1.f / magnitude());
+	}
+	
+	public void normalizeTo(float scale) {
+		scale(scale / magnitude());
 	}
 	
 	@Override
