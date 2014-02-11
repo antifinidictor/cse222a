@@ -18,6 +18,8 @@ public class Ball implements GameObject {
 		rmdl.setWidthScale(radius * 2.f);
 		SphereCollisionModel cmdl = new SphereCollisionModel(centerOffset, radius);
 		pmdl.setCollision(cmdl);
+		pmdl.setFrictionDivider(0.99f);
+		pmdl.setMass(100f);
 	}
 
 	@Override

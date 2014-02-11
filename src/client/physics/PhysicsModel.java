@@ -58,9 +58,22 @@ public class PhysicsModel implements Mobile {
 	}
 
 	public void applyForce(final Vec3f force) {
+		if(force.x() != force.x()) {
+		    System.err.println("Not-a-number error " + loc.x() + ", " + loc.y() + ", " + loc.z());
+		}
 		Vec3f newAccel = new Vec3f(force);
 		newAccel.scale(1.f / mass);
+		if(newAccel.x() != newAccel.x()) {
+		    System.err.println("Not-a-number error " + loc.x() + ", " + loc.y() + ", " + loc.z());
+		}
 		accel.add(newAccel);
+	}
+	
+	public void applyAcceleration(final Vec3f accel) {
+		if(accel.x() != accel.x()) {
+		    System.err.println("Not-a-number error " + loc.x() + ", " + loc.y() + ", " + loc.z());
+		}
+		this.accel.add(accel);
 	}
 	
 	public void onUpdate(float deltaTime) {
@@ -70,6 +83,9 @@ public class PhysicsModel implements Mobile {
 		    0.5f * accel.z() * deltaTime * deltaTime + vel.z() * deltaTime
 	    );
 	    moveBy(deltaLoc);
+	    if(loc.x() != loc.x()) {
+		    System.err.println("Not-a-number error " + loc.x() + ", " + loc.y() + ", " + loc.z());
+	    }
 	    vel = new Vec3f(
     		accel.x() * deltaTime + vel.x() * frictionDivider,
     		accel.y() * deltaTime + vel.y() * frictionDivider,
@@ -79,6 +95,7 @@ public class PhysicsModel implements Mobile {
 	}
 	
 	public float getMass() { return mass; }
+	public void setMass(float mass) { this.mass = mass; }
 	
 	public boolean isDynamic() { return isDynamic; }
 	
@@ -91,6 +108,15 @@ public class PhysicsModel implements Mobile {
 	public boolean onSurface() { return onSurface; }
 	public void setOnSurface(boolean onSurface) { this.onSurface = onSurface; }
 	
+	public void setFrictionDivider(float fdiv) { this.frictionDivider = fdiv; }
+	
+	public void setCollisionListener(CollisionListener collListener) { this.collListener = collListener; }
+	public void onCollision(PhysicsModel collMdl) {
+		if(collListener != null) {
+			collListener.onCollision(collMdl);
+		}
+	}
+	
 	//Physics information
 	private float mass;
 	private float frictionDivider;
@@ -101,4 +127,5 @@ public class PhysicsModel implements Mobile {
 	private boolean isDynamic;
 	private CollisionModel cmdl;
 	private boolean onSurface;
+	private CollisionListener collListener;
 }

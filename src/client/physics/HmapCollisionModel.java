@@ -85,7 +85,11 @@ public class HmapCollisionModel implements CollisionModel {
 		    v2 = new Vec3f(minX - maxX, y01 - y11, 0.f);
 	    }
 	    Vec3f normal = Vec3f.cross(v1, v2);
-	    normal.normalize();
+	    if(normal.squareMagnitude() == 0.f) {
+	    	normal.y(1.f);
+	    } else {
+		    normal.normalize();
+	    }
 		return normal;
 	}
 	

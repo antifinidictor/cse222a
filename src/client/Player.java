@@ -8,6 +8,7 @@ import java.awt.event.MouseMotionListener;
 
 import shared.Vec3f;
 import client.physics.CapsuleCollisionModel;
+import client.physics.CollisionListener;
 import client.physics.PhysicsModel;
 import client.render.Camera;
 import client.render.FollowCamera;
@@ -21,7 +22,7 @@ import com.jogamp.opengl.math.Quaternion;
  * @author Nathan Heisey
  *
  */
-public class Player implements GameObject, KeyListener, MouseMotionListener, MouseListener {
+public class Player implements GameObject, KeyListener, MouseMotionListener, MouseListener, CollisionListener {
 	public Player(final Vec3f loc, final Quaternion ori) {
 		float radius = 0.5f;
 		pmdl = new PhysicsModel(loc, ori);
@@ -38,6 +39,7 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 			radius
 		);
 		pmdl.setCollision(cmdl);
+		pmdl.setCollisionListener(this);
 		rmdl = null;
 	}
 
@@ -59,6 +61,7 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 
     	//float[] axis = {0.f, 1.f, 0.f};
     	//pmdl.rotateBy(new Quaternion(axis, (float) (Math.PI / 250.f)));
+		collidingWith = null;
 	}
 	
 
@@ -77,6 +80,8 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 			break;
 		case KeyEvent.VK_D:
 			strafeSpeed = MOVE_SPEED;
+			break;
+		case KeyEvent.VK_SPACE:
 			break;
 		default:
 			System.out.println("Unrecognized key pressed");
@@ -98,8 +103,17 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		case KeyEvent.VK_D:
 			strafeSpeed = 0.f;
 			break;
+		case KeyEvent.VK_SPACE:
+			if(collidingWith == null) {
+				//Make a new ball
+				makeBall();
+			} else {
+				//Punt the ball
+				puntBall(collidingWith);
+			}
+			break;
 		default:
-			System.out.println("Unrecognized key pressed");
+			System.out.println("Unrecognized key released");
 		}
 	}
 
@@ -168,6 +182,26 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		//System.out.println("Mouse released");
 		
 	}
+
+	@Override
+	public void onCollision(PhysicsModel pmdl) {
+		collidingWith = pmdl;
+	}
+	
+	private void makeBall() {
+		float [] fwd = {0.f, 0.f, -1.f};
+		Vec3f ballPos = new Vec3f(pmdl.ori().mult(fwd));
+		ballPos.add(pmdl.loc());
+		Ball ball = new Ball(ballPos, 0.5f, RenderEngine.get().getTexture(1));
+		GameEngine.get().add(ball);
+	}
+	
+	private void puntBall(PhysicsModel ballModel) {
+		Vec3f force = new Vec3f(collidingWith.loc());
+		force.sub(pmdl.loc());
+		force.normalizeTo(PUNCH_FORCE_MAGNITUDE);
+		collidingWith.applyForce(force);
+	}
 	
 	private float forwardSpeed;
 	private float strafeSpeed;
@@ -180,7 +214,10 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 	private PhysicsModel pmdl;
 	private RenderModel  rmdl;
 	private Camera camera;
+
+	private PhysicsModel collidingWith;
 	
 	private static final float MOVE_SPEED = 0.01f;
+	private static final float PUNCH_FORCE_MAGNITUDE = 10.f;
 
 }

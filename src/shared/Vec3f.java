@@ -59,6 +59,17 @@ public class Vec3f {
 		return crossProduct;
 	}
 	
+	public static float squareDist(final Vec3f src1, final Vec3f src2) {
+		float dx = src1.x() - src2.x();
+		float dy = src1.y() - src2.y();
+		float dz = src1.z() - src2.z();
+		return dx * dx + dy * dy + dz * dz; 
+	}
+	
+	public static float dist(final Vec3f src1, final Vec3f src2) {
+		return (float) Math.sqrt(squareDist(src1, src2));
+	}
+	
 	public float squareMagnitude() {
 		return (x() * x() + y() * y() + z() * z());
 	}

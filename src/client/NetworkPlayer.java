@@ -28,6 +28,7 @@ public class NetworkPlayer implements GameObject {
 		);
 		pmdl.setCollision(cmdl);
 		rmdl.setFrame(2, 0);
+		animState = AnimState.ANIM_STANDING;
 	}
 
 	@Override
@@ -63,24 +64,51 @@ public class NetworkPlayer implements GameObject {
             rmdl.setFrame(WEST, -1);	//West
         }
 		
-		//animations
+		//animations.  Set the animState variable to change which animation
+        // is playing.
 		if(animTimer > MAX_ANIM_TIMER) {
 			animTimer = 0;
-			animFrame = (animFrame + 1) % rmdl.getTexInfo().getFramesHigh();
+			if(--animFrame < ANIM_MAP[animState.index()][LAST_FRAME]) {
+				animFrame = ANIM_MAP[animState.index()][FIRST_FRAME];
+			}
 			rmdl.setFrame(-1, animFrame);
 		} else {
 			animTimer++;
 		}
 	}
 
-	private static final int MAX_ANIM_TIMER = 20;
 	private int animTimer = 0;
 	private int animFrame = 0;
 	private PhysicsModel pmdl;
 	private SpriteRenderModel  rmdl;
+	private AnimState animState;
 	
 	private static final int NORTH = 4;
 	private static final int EAST = 3;
 	private static final int SOUTH = 2;
 	private static final int WEST = 1;
+	
+	private enum AnimState {
+		ANIM_STANDING(0),
+		ANIM_WALKING(1),
+		ANIM_THROWING(2),
+		ANIM_PUSHING(3),
+		ANIM_CLIMBING(4);
+
+		public int index() { return index; }
+		
+		private AnimState(int index) {
+			this.index = index;
+		}
+		private int index;
+	}
+	private static final int MAX_ANIM_TIMER = 10;
+	private static final int FIRST_FRAME = 0;
+	private static final int LAST_FRAME = 1;
+	private static final int [][] ANIM_MAP =
+		{{19,19},	//standing
+		 {18,15},	//walking
+		 {14,12},	//throwing
+		 {11,8},	//pushing
+		 {7,0}};	//climbing
 }

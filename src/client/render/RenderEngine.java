@@ -100,12 +100,16 @@ public class RenderEngine implements GLEventListener {
 	    gl.glEnable(GL.GL_TEXTURE_2D);
 	    gl.glEnable(GL.GL_BLEND);
 	    gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+	    gl.glAlphaFunc(GL.GL_GREATER, 0.9f);
+	    gl.glEnable(GL2.GL_ALPHA_TEST);
 	    
-	    gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// Set background color to black and opaque
+	    gl.glClearColor(0.3f, 0.5f, 1.f, 0.8f);	// Set background color to black and opaque
 	    gl.glClearDepth(1.0f);						// Set background depth to farthest
 	    gl.glEnable(GL.GL_DEPTH_TEST);				// Enable depth testing for z-culling
 	    gl.glDepthFunc(GL.GL_LEQUAL);				// Set the type of depth-test
 	    gl.glShadeModel(GL2.GL_SMOOTH);
+	    
+	    //Set some alpha properties
 	}
 
 	@Override
@@ -196,6 +200,7 @@ public class RenderEngine implements GLEventListener {
 			Texture tex = TextureIO.newTexture(new File(filename), true);
 			tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
 			tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+			tex.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
 			
 			textures.add(new TextureInfo(tex, framesWide, framesHigh));
 			texID = textures.size() - 1;

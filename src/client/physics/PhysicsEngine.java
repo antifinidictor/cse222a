@@ -20,7 +20,7 @@ public class PhysicsEngine {
 				mdl.onUpdate(1.f);
 				
 				//This force will get mixed in on the next update
-				mdl.applyForce(gravity);
+				mdl.applyAcceleration(gravity);
 				mdl.setOnSurface(false);	//Used to ensure gravity force counteracted only once
 				
 				//This object should have collisions checked
@@ -65,6 +65,10 @@ public class PhysicsEngine {
 				capsuleOnHmapCollision(mdl1, mdl2);
 				break;
 			case CAPSULE:
+				capsuleOnCapsuleCollision(mdl1, mdl2);
+				break;
+			case SPHERE:
+				capsuleOnSphereCollision(mdl1, mdl2);
 				break;
 			default:
 				break;
@@ -86,6 +90,9 @@ public class PhysicsEngine {
 			switch(cmdl2.type()) {
 			case HMAP:
 				sphereOnHmapCollision(mdl1, mdl2);
+				break;
+			case CAPSULE:
+				capsuleOnSphereCollision(mdl2, mdl1);
 				break;
 			default:
 				break;
@@ -133,7 +140,7 @@ public class PhysicsEngine {
 		float maxDiff = (ydiff1 > ydiff2) ? ydiff1 : ydiff2;
 		capsMdl.moveBy(new Vec3f(0.f, maxDiff, 0.f));
 		if(capsMdl.onSurface()) {
-			capsMdl.applyForce(normForce);	//For now, just stop them from falling
+			capsMdl.applyAcceleration(normForce);	//For now, just stop them from falling
 			capsMdl.setOnSurface(true);
 		}
 	}
@@ -165,16 +172,27 @@ public class PhysicsEngine {
 		sphereMdl.moveBy(new Vec3f(0.f, ydiff, 0.f));
 		if(!sphereMdl.onSurface()) {
 			Vec3f normal = hcmdl.getNormalAt(center);
-			normal.normalizeTo(gravityMagnitude);
+			normal.normalizeTo(gravityMagnitude * sphereMdl.getMass());
 			//System.out.println("Normal = (" + normal.x() + "," + normal.y() + "," + normal.z() + ")");
 			sphereMdl.applyForce(normal);	//For now, just stop them from falling
 			sphereMdl.setOnSurface(true);
 		}
 	}
-	
+
+	private void capsuleOnSphereCollision(PhysicsModel capsMdl, PhysicsModel sphereMdl) {
+		SphereCollisionModel sphereCmdl = (SphereCollisionModel)sphereMdl.getCollision();
+		CapsuleCollisionModel capsCmdl = (CapsuleCollisionModel) capsMdl.getCollision();
+		
+		Vec3f nearPos = capsCmdl.getClosestPoint(sphereCmdl.getCenter());
+		if(Vec3f.dist(nearPos, sphereCmdl.getCenter()) < (sphereCmdl.getRadius() + capsCmdl.getRadius())) {
+			//Collision occurred
+			capsMdl.onCollision(sphereMdl);
+			sphereMdl.onCollision(capsMdl);
+		}
+	}
 	private List<PhysicsModel> models = new ArrayList();
 	private static PhysicsEngine instance;
-	private static final float gravityMagnitude = 0.1f;
+	private static final float gravityMagnitude = 0.01f;
 	private static final Vec3f gravity = new Vec3f(0.f, -gravityMagnitude, 0.f);
 	private static final Vec3f normForce = new Vec3f(0.f, gravityMagnitude, 0.f);
 }
