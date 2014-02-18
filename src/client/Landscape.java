@@ -10,8 +10,12 @@ import client.render.TextureInfo;
 import shared.*;
 
 public class Landscape implements GameObject {
+	private PhysicsModel pmdl;
+	private HmapRenderModel rmdl;
+	private int id;
 	
-	public Landscape(final String filename, TextureInfo tex, final Box bounds) {
+	public Landscape(int id, final String filename, TextureInfo tex, final Box bounds) {
+		this.id = id;
 		Vec3f pos = bounds.center();
 		Box relativeBounds = new Box(bounds);
 		relativeBounds.max.sub(pos);
@@ -33,6 +37,13 @@ public class Landscape implements GameObject {
 		//Do nothing
 	}
 	
-	PhysicsModel pmdl;
-	HmapRenderModel rmdl;
+	@Override
+	public int getID() {
+		return id;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof GameObject) && ((((GameObject)obj)).getID() == getID());
+	}
 }

@@ -23,7 +23,27 @@ import com.jogamp.opengl.math.Quaternion;
  *
  */
 public class Player implements GameObject, KeyListener, MouseMotionListener, MouseListener, CollisionListener {
-	public Player(final Vec3f loc, final Quaternion ori) {
+	
+	private float forwardSpeed;
+	private float strafeSpeed;
+	private float xrot;
+	private float yrot;
+	
+	private float lastCamX;
+	private float lastCamY;
+
+	private PhysicsModel pmdl;
+	private RenderModel  rmdl;
+	private Camera camera;
+
+	private PhysicsModel collidingWith;
+	private int id;
+	
+	private static final float MOVE_SPEED = 0.01f;
+	private static final float PUNCH_FORCE_MAGNITUDE = 10.f;
+	
+	public Player(int id, final Vec3f loc, final Quaternion ori) {
+		this.id = id;
 		float radius = 0.5f;
 		pmdl = new PhysicsModel(loc, ori);
 		camera = new FollowCamera(pmdl);
@@ -112,6 +132,19 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 				puntBall(collidingWith);
 			}
 			break;
+		case KeyEvent.VK_Q:
+			if(collidingWith == null) {
+				System.out.println("Not touching anything!");
+			} else {
+				puntBall(collidingWith);
+			}
+			break;
+		case KeyEvent.VK_E:
+			makeBall();
+			break;
+		case KeyEvent.VK_ESCAPE:
+			//Lose focus, bring the mouse back
+			break;
 		default:
 			System.out.println("Unrecognized key released");
 		}
@@ -192,7 +225,7 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		float [] fwd = {0.f, 0.f, -1.f};
 		Vec3f ballPos = new Vec3f(pmdl.ori().mult(fwd));
 		ballPos.add(pmdl.loc());
-		Ball ball = new Ball(ballPos, 0.5f, RenderEngine.get().getTexture(1));
+		Ball ball = new Ball(GameEngine.get().genID(), ballPos, 0.5f, RenderEngine.get().getTexture(1));
 		GameEngine.get().add(ball);
 	}
 	
@@ -202,22 +235,15 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		force.normalizeTo(PUNCH_FORCE_MAGNITUDE);
 		collidingWith.applyForce(force);
 	}
-	
-	private float forwardSpeed;
-	private float strafeSpeed;
-	private float xrot;
-	private float yrot;
-	
-	private float lastCamX;
-	private float lastCamY;
 
-	private PhysicsModel pmdl;
-	private RenderModel  rmdl;
-	private Camera camera;
-
-	private PhysicsModel collidingWith;
+	@Override
+	public int getID() {
+		return id;
+	}
 	
-	private static final float MOVE_SPEED = 0.01f;
-	private static final float PUNCH_FORCE_MAGNITUDE = 10.f;
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof GameObject) && ((((GameObject)obj)).getID() == getID());
+	}
 
 }

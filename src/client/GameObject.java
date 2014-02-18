@@ -12,4 +12,5 @@ public interface GameObject {
 	public PhysicsModel getPhysics();
 	public RenderModel  getRender();
 	public void onUpdate();	//Update event callback
+	public int getID();	//Returns a unique identifier for this object
 }

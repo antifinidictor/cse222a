@@ -76,17 +76,19 @@ public class GameEngine {
 	 */
 	public void buildWorld() {
 		float [] axis = {0.f, 1.f, 0.f};
-		Player player = new Player(new Vec3f(1.f, 0.f, 0.f), new Quaternion(axis, (float)Math.PI / 1.5f));
+		Player player = new Player(genID(), new Vec3f(1.f, 0.f, 0.f), new Quaternion(axis, (float)Math.PI / 1.5f));
 		add(player);
 
     	int texID = RenderEngine.get().makeTexture("res/grass.png");
 		Landscape testLandscape = new Landscape(
+			genID(),
 			"res/hmap.jpg",
 			RenderEngine.get().getTexture(texID),
 			new Box(-5, -1, -5, 10, 2, 10)
 		);
 		add(testLandscape);
 		testLandscape = new Landscape(
+				genID(),
 				"res/hmap.jpg",
 				RenderEngine.get().getTexture(texID),
 				new Box(-15, -1, -5, 10, 1, 10)
@@ -95,16 +97,18 @@ public class GameEngine {
 		
 		texID = RenderEngine.get().makeTexture("res/ball.png");
 		Ball ball = new Ball(
+			genID(),
 			new Vec3f(0.f, 1.f, 0.f),
 			.5f,	//radius
 			RenderEngine.get().getTexture(texID)
 		);
 		add(ball);
 		
-		texID = RenderEngine.get().makeTexture("res/magus.png", 4, 20);
+		texID = RenderEngine.get().makeTexture("res/player.png", 8, 20);
 		NetworkPlayer netPlayer = new NetworkPlayer(
-			new Vec3f(0.f, .5f, 3.f),
-			new Quaternion(),
+			genID(),
+			new Vec3f(-3.f, .5f, 0.f),
+			new Quaternion(axis, 0 * (float)Math.PI / 4),
 			RenderEngine.get().getTexture(texID)
 		);
 		add(netPlayer);
@@ -130,11 +134,14 @@ public class GameEngine {
         });
 	}
 	
+	public int genID() { return nextID++; }
+	
 	public Frame getWindow() { return window; }
 
 	private boolean isRunning = true;
 	private Frame window;
 	private List<GameObject> objs = new ArrayList();
+	private int nextID = 0;
 	
 	private static GameEngine instance = null;
 }

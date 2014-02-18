@@ -10,7 +10,13 @@ import client.render.SpriteRenderModel;
 import client.render.TextureInfo;
 
 public class Ball implements GameObject {
-	public Ball(final Vec3f loc, float radius, TextureInfo tex) {
+
+	private PhysicsModel pmdl;
+	private SpriteRenderModel rmdl;
+	private int id;
+	
+	public Ball(int id, final Vec3f loc, float radius, TextureInfo tex) {
+		this.id = id;
 		Vec3f centerOffset = new Vec3f(0.f,0.f,0.f);
 		pmdl = new PhysicsModel(loc, new Quaternion());
 		rmdl = new SpriteRenderModel(pmdl, centerOffset, tex);
@@ -37,6 +43,13 @@ public class Ball implements GameObject {
 		//All we do is obey the laws of physics...
 	}
 
-	PhysicsModel pmdl;
-	SpriteRenderModel rmdl;
+	@Override
+	public int getID() {
+		return id;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof GameObject) && ((((GameObject)obj)).getID() == getID());
+	}
 }

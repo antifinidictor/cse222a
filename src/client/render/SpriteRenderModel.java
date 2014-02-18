@@ -1,12 +1,9 @@
 package client.render;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
+import shared.Color;
 import shared.Positionable;
 import shared.Vec3f;
 
@@ -49,7 +46,6 @@ public class SpriteRenderModel implements RenderModel {
 		);
 		gl.glMultMatrixf(ori.toMatrix(), 0);
 
-		
 		float frameWidth = tex.getTexture().getWidth() / tex.getFramesWide();
 		float frameHeight = tex.getTexture().getWidth() / tex.getFramesWide();
 		float width  = widthScale * frameWidth / frameHeight;
@@ -69,6 +65,7 @@ public class SpriteRenderModel implements RenderModel {
 
 		tex.getTexture().bind(gl);
 
+		gl.glColor3f(color.getRed(), color.getGreen(), color.getBlue());
 		gl.glBegin(GL2.GL_QUADS);
 	        //Top-left vertex (corner)
 	        gl.glTexCoord2f(texLeft, texTop);
@@ -109,9 +106,18 @@ public class SpriteRenderModel implements RenderModel {
 	
 	public TextureInfo getTexInfo() { return tex; }
 	
+	public void setColor(float r, float g, float b) {
+		this.color = new Color(r,g,b);
+	}
+	
+	public void setColor(final Color color) {
+		this.color = color;
+	}
+	
 	private int frameW, frameH;
 	private Positionable myPos;
 	private TextureInfo tex;
 	private Vec3f offset;
 	private float widthScale, heightScale;
+	private Color color = new Color();
 }
