@@ -1,7 +1,7 @@
 #################
 ## CSE 222A project files
 #################
-res/
+*.xcf
 
 #################
 ## Personal files
