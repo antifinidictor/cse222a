@@ -76,7 +76,7 @@ public class GameEngine {
 	 */
 	public void buildWorld() {
 		float [] axis = {0.f, 1.f, 0.f};
-		Player player = new Player(genID(), new Vec3f(1.f, 0.f, 0.f), new Quaternion(axis, (float)Math.PI / 1.5f));
+		Player player = new LocalPlayer(genID(), new Vec3f(1.f, 0.f, 0.f), new Quaternion(axis, (float)Math.PI / 1.5f));
 		add(player);
 
     	int texID = RenderEngine.get().makeTexture("res/grass.png");
