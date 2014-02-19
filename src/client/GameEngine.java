@@ -42,6 +42,9 @@ public class GameEngine {
 	}
 	
 	public void update() {
+		removeAll();
+		addAll();
+		
 		for(GameObject obj : objs) {
 			//Logic update
 			obj.onUpdate();
@@ -52,23 +55,37 @@ public class GameEngine {
 	public void kill() { isRunning = false; }
 	
 	public void add(GameObject obj) {
-		if(obj.getPhysics() != null) {
-			PhysicsEngine.get().add(obj.getPhysics());
-		}
-		if(obj.getRender() != null) {
-			RenderEngine.get().add(obj.getRender());
-		}
-		objs.add(obj);
+		objsToAdd.add(obj);
 	}
 	
 	public void remove(GameObject obj) {
-		if(obj.getPhysics() != null) {
-			PhysicsEngine.get().remove(obj.getPhysics());
+		objsToRemove.add(obj);
+	}
+	
+	private void addAll() {
+		for(GameObject obj : objsToAdd) {
+			if(obj.getPhysics() != null) {
+				PhysicsEngine.get().add(obj.getPhysics());
+			}
+			if(obj.getRender() != null) {
+				RenderEngine.get().add(obj.getRender());
+			}
+			objs.add(obj);
 		}
-		if(obj.getRender() != null) {
-			RenderEngine.get().remove(obj.getRender());
+		objsToAdd.clear();
+	}
+	
+	private void removeAll() {
+		for(GameObject obj : objsToRemove) {
+			if(obj.getPhysics() != null) {
+				PhysicsEngine.get().remove(obj.getPhysics());
+			}
+			if(obj.getRender() != null) {
+				RenderEngine.get().remove(obj.getRender());
+			}
+			objs.remove(obj);
 		}
-		objs.remove(obj);
+		objsToRemove.clear();
 	}
 	
 	/*
@@ -141,6 +158,8 @@ public class GameEngine {
 	private boolean isRunning = true;
 	private Frame window;
 	private List<GameObject> objs = new ArrayList();
+	private List<GameObject> objsToAdd = new ArrayList();
+	private List<GameObject> objsToRemove = new ArrayList();
 	private int nextID = 0;
 	
 	private static GameEngine instance = null;

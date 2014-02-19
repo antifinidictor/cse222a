@@ -10,7 +10,7 @@ public interface TheNetwork {
 	/*This returns the entire state serialized.*/
     public byte[] getState();
     
-    /*This, given a serialized state, rplaces the entire state with the given one. */
+    /*This, given a serialized state, replaces the entire state with the given one. */
     public void decodeState(ByteBuffer wrapped);
     
     public void setClientID(int id);
