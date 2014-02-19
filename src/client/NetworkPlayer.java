@@ -14,11 +14,10 @@ import client.render.RenderModel;
 import client.render.SpriteRenderModel;
 import client.render.TextureInfo;
 
-public class NetworkPlayer implements GameObject {
+public class NetworkPlayer extends Player {
 
 	private int animTimer = 0;
 	private int animFrame = 0;
-	private PhysicsModel pmdl;
 	private SpriteRenderModel  rmdl;
 	private AnimState animState;
 	
@@ -58,28 +57,17 @@ public class NetworkPlayer implements GameObject {
 	private int id;
 	
 	public NetworkPlayer(int id, final Vec3f loc, final Quaternion ori, TextureInfo tex) {
+		super(id, loc, ori);
 		this.id = id;
 		float radius = 0.5f;
 		Vec3f renderOffset = new Vec3f(0.f,-radius,0.f);
 		Vec3f centerOffset = new Vec3f(0.f,0.f,0.f);
-		pmdl = new PhysicsModel(loc, ori);
-		rmdl = new SpriteRenderModel(pmdl, renderOffset, tex);
+		rmdl = new SpriteRenderModel(getPhysics(), renderOffset, tex);
 		//rmdl.setHeightScale(radius * 2.f);
 		//rmdl.setWidthScale(radius * 2.f);
-		CapsuleCollisionModel cmdl = new CapsuleCollisionModel(
-			new Vec3f(0.f,-radius,0.f),	//Player's feet are 1.5m below the camera
-			centerOffset,
-			radius
-		);
-		pmdl.setCollision(cmdl);
 		rmdl.setFrame(2, 0);
 		animState = AnimState.ANIM_WALKING;
 		//animState = AnimState.ANIM_STANDING;
-	}
-
-	@Override
-	public PhysicsModel getPhysics() {
-		return pmdl;
 	}
 
 	@Override
@@ -89,11 +77,15 @@ public class NetworkPlayer implements GameObject {
 
 	@Override
 	public void onUpdate() {
-		float [] vec = {0.f, 0.f, 0.0001f};
-		pmdl.applyForce(new Vec3f(pmdl.ori().mult(vec)));
+		super.onUpdate();
 		
+		PhysicsModel pmdl = getPhysics();
+
+		
+		/*
+		 * Rotating the sprite and changing the current frame
+		 */
 		//Change the frame relative to the camera position and my rotation
-		//float [] forwardVec = {0.f, 0.f, -1.f};
 		Vec3f camVec = new Vec3f(RenderEngine.get().getCamera().loc());
 		camVec.sub(pmdl.loc());
 		
@@ -108,7 +100,7 @@ public class NetworkPlayer implements GameObject {
         //System.out.println("Frame = " + frameDir + ", angle = " + (theta * 180 / Math.PI));
         rmdl.setFrame(frameDir, -1);
 		
-		//animations.  Set the animState variable to change which animation
+		//Animations: Set the animState variable to change which animation
         // is playing.
 		if(animTimer > MAX_ANIM_TIMER) {
 			animTimer = 0;
@@ -119,15 +111,5 @@ public class NetworkPlayer implements GameObject {
 		} else {
 			animTimer++;
 		}
-	}
-
-	@Override
-	public int getID() {
-		return id;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof GameObject) && ((((GameObject)obj)).getID() == getID());
 	}
 }
