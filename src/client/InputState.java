@@ -1,4 +1,4 @@
-package client.network;
+package client;
 
 public class InputState {
 	private int state;

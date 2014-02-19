@@ -20,8 +20,8 @@ public class Landscape implements GameObject {
 		Box relativeBounds = new Box(bounds);
 		relativeBounds.max.sub(pos);
 		relativeBounds.min.sub(pos);
-		pmdl = new PhysicsModel(pos, new Quaternion(), false);	//static
-		rmdl = new HmapRenderModel(filename, tex, pmdl, relativeBounds);
+		pmdl = new PhysicsModel(this, pos, new Quaternion(), false);	//static
+		rmdl = new HmapRenderModel(this, filename, tex, pmdl, relativeBounds);
 		HmapCollisionModel cmdl = new HmapCollisionModel(rmdl.getHmap(), relativeBounds);
 		pmdl.setCollision(cmdl);
 	}

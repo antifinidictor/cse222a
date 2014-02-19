@@ -18,8 +18,8 @@ public class Ball implements GameObject {
 	public Ball(int id, final Vec3f loc, float radius, TextureInfo tex) {
 		this.id = id;
 		Vec3f centerOffset = new Vec3f(0.f,0.f,0.f);
-		pmdl = new PhysicsModel(loc, new Quaternion());
-		rmdl = new SpriteRenderModel(pmdl, centerOffset, tex);
+		pmdl = new PhysicsModel(this, loc, new Quaternion());
+		rmdl = new SpriteRenderModel(this, pmdl, centerOffset, tex);
 		rmdl.setHeightScale(radius * 2.f);
 		rmdl.setWidthScale(radius * 2.f);
 		SphereCollisionModel cmdl = new SphereCollisionModel(centerOffset, radius);

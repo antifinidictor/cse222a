@@ -62,7 +62,7 @@ public class NetworkPlayer extends Player {
 		float radius = 0.5f;
 		Vec3f renderOffset = new Vec3f(0.f,-radius,0.f);
 		Vec3f centerOffset = new Vec3f(0.f,0.f,0.f);
-		rmdl = new SpriteRenderModel(getPhysics(), renderOffset, tex);
+		rmdl = new SpriteRenderModel(this, getPhysics(), renderOffset, tex);
 		//rmdl.setHeightScale(radius * 2.f);
 		//rmdl.setWidthScale(radius * 2.f);
 		rmdl.setFrame(2, 0);
@@ -83,7 +83,7 @@ public class NetworkPlayer extends Player {
 
 		
 		/*
-		 * Rotating the sprite and changing the current frame
+		 * Rotating the sprite and updating the animation
 		 */
 		//Change the frame relative to the camera position and my rotation
 		Vec3f camVec = new Vec3f(RenderEngine.get().getCamera().loc());

@@ -5,18 +5,23 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import shared.Box;
 import shared.Positionable;
-import shared.Vec3f;
-import client.physics.HmapCollisionModel;
+import client.GameObject;
 
 public class HmapRenderModel implements RenderModel {
+	private Positionable myPos;
+	private float hmap[][];
+	private Box bounds;
+	private TextureInfo tex;
+	static final int DEFAULT_HMAP_SIZE = 10;
+	private GameObject parent;
 	
-	public HmapRenderModel(String filename, TextureInfo tex, Positionable myPos, Box bounds) {
+	public HmapRenderModel(GameObject parent, String filename, TextureInfo tex, Positionable myPos, Box bounds) {
+		this.parent = parent;
 		this.myPos = myPos;
 		this.bounds = bounds;
 		this.tex = tex;
@@ -42,6 +47,16 @@ public class HmapRenderModel implements RenderModel {
 			System.err.println(e);
 			hmap = new float[DEFAULT_HMAP_SIZE][DEFAULT_HMAP_SIZE];
 		}
+	}
+
+	@Override
+	public GameObject getParent() {
+		return parent;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof RenderModel) && ((((RenderModel)obj)).getParent().getID() == getParent().getID());
 	}
 	
 	public float[][] getHmap() { return hmap; }
@@ -138,10 +153,4 @@ public class HmapRenderModel implements RenderModel {
 		//Undo matrix changes made for this object
 		gl.glPopMatrix();
 	}
-
-	private Positionable myPos;
-	private float hmap[][];
-	private Box bounds;
-	private TextureInfo tex;
-	static final int DEFAULT_HMAP_SIZE = 10;
 }

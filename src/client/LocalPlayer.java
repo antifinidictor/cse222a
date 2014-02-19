@@ -9,7 +9,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import shared.Vec3f;
-import client.network.InputState;
 import client.physics.CapsuleCollisionModel;
 import client.physics.CollisionListener;
 import client.physics.PhysicsModel;

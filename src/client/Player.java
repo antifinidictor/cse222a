@@ -9,7 +9,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import shared.Vec3f;
-import client.network.InputState;
 import client.physics.CapsuleCollisionModel;
 import client.physics.CollisionListener;
 import client.physics.PhysicsModel;
@@ -46,7 +45,7 @@ public abstract class Player implements GameObject, CollisionListener {
 	public Player(int id, final Vec3f loc, final Quaternion ori) {
 		this.id = id;
 		float radius = 0.5f;
-		pmdl = new PhysicsModel(loc, ori);
+		pmdl = new PhysicsModel(this, loc, ori);
 		yaw = pitch = yawSpeed = pitchSpeed = 0.f;
 
 		
@@ -158,8 +157,8 @@ public abstract class Player implements GameObject, CollisionListener {
 			System.out.println("ERROR: Could not punt: Not colliding with ball!");
 			return;
 		}
-		//GameEngine.get().remove(collidingWith);
-		//collidingWith = null;
+		GameEngine.get().remove(collidingWith.getParent());
+		collidingWith = null;
 	}
 	
 	

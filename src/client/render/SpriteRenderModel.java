@@ -6,12 +6,22 @@ import javax.media.opengl.GLAutoDrawable;
 import shared.Color;
 import shared.Positionable;
 import shared.Vec3f;
+import client.GameObject;
 
 import com.jogamp.opengl.math.Quaternion;
 
 public class SpriteRenderModel implements RenderModel {
 	
-	public SpriteRenderModel(Positionable myPos, final Vec3f offset, TextureInfo tex) {
+	private int frameW, frameH;
+	private Positionable myPos;
+	private TextureInfo tex;
+	private Vec3f offset;
+	private float widthScale, heightScale;
+	private Color color = new Color();
+	private GameObject parent;
+	
+	public SpriteRenderModel(GameObject parent, Positionable myPos, final Vec3f offset, TextureInfo tex) {
+		this.parent = parent;
 		this.myPos = myPos;
 		this.offset = new Vec3f(offset);
 		this.tex = tex;
@@ -21,6 +31,16 @@ public class SpriteRenderModel implements RenderModel {
 		this.heightScale = 1.f;
 		this.frameW = 0;
 		this.frameH = 0;
+	}
+	
+	@Override
+	public GameObject getParent() {
+		return parent;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof RenderModel) && ((((RenderModel)obj)).getParent().getID() == getParent().getID());
 	}
 
 	@Override
@@ -113,11 +133,4 @@ public class SpriteRenderModel implements RenderModel {
 	public void setColor(final Color color) {
 		this.color = color;
 	}
-	
-	private int frameW, frameH;
-	private Positionable myPos;
-	private TextureInfo tex;
-	private Vec3f offset;
-	private float widthScale, heightScale;
-	private Color color = new Color();
 }

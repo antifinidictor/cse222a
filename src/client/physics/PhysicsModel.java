@@ -2,14 +2,30 @@ package client.physics;
 
 import shared.Mobile;
 import shared.Vec3f;
+import client.GameObject;
 
 import com.jogamp.opengl.math.Quaternion;
 
 public class PhysicsModel implements Mobile {
-	public PhysicsModel(final Vec3f loc, final Quaternion ori, boolean isDynamic) {
+	
+	//Physics information
+	private float mass;
+	private float frictionDivider;
+	private Vec3f vel;
+	private Vec3f accel;
+	private Vec3f loc;
+	private Quaternion ori;
+	private boolean isDynamic;
+	private CollisionModel cmdl;
+	private boolean onSurface;
+	private CollisionListener collListener;
+	private GameObject parent;
+	
+	public PhysicsModel(GameObject parent, final Vec3f loc, final Quaternion ori, boolean isDynamic) {
 		this.loc = new Vec3f(loc);
 		this.ori = new Quaternion();
 		this.isDynamic = isDynamic;
+		this.parent = parent;
 		rotateTo(ori);
 		
 		vel = new Vec3f(0.f, 0.f, 0.f);
@@ -20,8 +36,17 @@ public class PhysicsModel implements Mobile {
 		frictionDivider = 0.9f;
 	}
 	
-	public PhysicsModel(final Vec3f loc, final Quaternion ori) {
-		this(loc, ori, true);
+	public PhysicsModel(GameObject parent, final Vec3f loc, final Quaternion ori) {
+		this(parent, loc, ori, true);
+	}
+	
+	public GameObject getParent() {
+		return parent;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof PhysicsModel) && ((((PhysicsModel)obj)).getParent().getID() == getParent().getID());
 	}
 
 	@Override
@@ -116,16 +141,4 @@ public class PhysicsModel implements Mobile {
 			collListener.onCollision(collMdl);
 		}
 	}
-	
-	//Physics information
-	private float mass;
-	private float frictionDivider;
-	private Vec3f vel;
-	private Vec3f accel;
-	private Vec3f loc;
-	private Quaternion ori;
-	private boolean isDynamic;
-	private CollisionModel cmdl;
-	private boolean onSurface;
-	private CollisionListener collListener;
 }
