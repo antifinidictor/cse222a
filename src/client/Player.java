@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import shared.Vec3f;
+import client.network.InputState;
 import client.physics.CapsuleCollisionModel;
 import client.physics.CollisionListener;
 import client.physics.PhysicsModel;
@@ -40,10 +41,7 @@ public abstract class Player implements GameObject, CollisionListener {
 	private static final float MOVE_SPEED = 0.01f;
 	private static final float PUNCH_FORCE_MAGNITUDE = 10.f;
 	private static final float ROTATION_SPEED = (float)Math.PI / 100.f;
-	protected static final int MOVE_FORWARD = 0;
-	protected static final int MOVE_BACKWARD = 1;
-	protected static final int TURN_LEFT = 2;
-	protected static final int TURN_RIGHT = 3;
+	protected InputState inputState;
 	
 	public Player(int id, final Vec3f loc, final Quaternion ori) {
 		this.id = id;
@@ -74,7 +72,38 @@ public abstract class Player implements GameObject, CollisionListener {
 
 	@Override
 	public void onUpdate() {
-		//camera.moveRelative(new Vec3f(strafeSpeed, 0.f, forwardSpeed));
+		//Update speeds
+		if(inputState.getBit(InputState.MOVE_FORWARD)) {
+			forwardSpeed = -MOVE_SPEED;
+		} else if(inputState.getBit(InputState.MOVE_BACKWARD)) {
+			forwardSpeed = MOVE_SPEED;
+		} else {
+			forwardSpeed = 0.f;
+		}
+		if(inputState.getBit(InputState.STRAFE_LEFT)) {
+			strafeSpeed = -MOVE_SPEED;
+		} else if(inputState.getBit(InputState.STRAFE_RIGHT)) {
+			strafeSpeed = MOVE_SPEED;
+		} else {
+			strafeSpeed = 0.f;
+		}
+		if(inputState.getBit(InputState.ROTATE_LEFT)) {
+			yawSpeed = -ROTATION_SPEED;
+		} else if(inputState.getBit(InputState.ROTATE_RIGHT)) {
+			yawSpeed = ROTATION_SPEED;
+		} else {
+			yawSpeed = 0.f;
+		}
+		if(inputState.getBit(InputState.ROTATE_LEFT)) {
+			pitchSpeed = -ROTATION_SPEED;
+		} else if(inputState.getBit(InputState.ROTATE_RIGHT)) {
+			pitchSpeed = ROTATION_SPEED;
+		} else {
+			pitchSpeed = 0.f;
+		}
+		
+		
+		//rotation
 		yaw += yawSpeed;
 		pitch += pitchSpeed;
 		float [] yawVec = {0.f, 1.f, 0.f};
@@ -82,6 +111,8 @@ public abstract class Player implements GameObject, CollisionListener {
 		Quaternion ori = new Quaternion(yawVec, yaw);
 		ori.mult(new Quaternion(pitchVec, pitch));
 		pmdl.rotateTo(ori);
+		
+		//movement
 		float [] vec = {strafeSpeed, 0.f, forwardSpeed};
 		pmdl.applyForce(new Vec3f(ori.mult(vec)));
 

@@ -57,9 +57,17 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 			}
 		}
 		if(left) {
-			this.onRotateLeft();
+			if(shift) {
+				this.onStrafeLeft();
+			} else {
+				this.onRotateLeft();
+			}
 		} else if(right) {
-			this.onRotateRight();
+			if(shift) {
+				this.onStrafeRight();
+			} else {
+				this.onRotateRight();
+			}
 		}
 		super.onUpdate();
 	}
