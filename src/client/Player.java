@@ -43,6 +43,10 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 	
 	private static final float MOVE_SPEED = 0.01f;
 	private static final float PUNCH_FORCE_MAGNITUDE = 10.f;
+	protected static final int MOVE_FORWARD = 0;
+	protected static final int MOVE_BACKWARD = 1;
+	protected static final int TURN_LEFT = 2;
+	protected static final int TURN_RIGHT = 3;
 	
 	public Player(int id, final Vec3f loc, final Quaternion ori) {
 		this.id = id;
@@ -85,7 +89,6 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
     	//pmdl.rotateBy(new Quaternion(axis, (float) (Math.PI / 250.f)));
 		collidingWith = null;
 	}
-	
 
 	@Override
 	public void keyPressed(KeyEvent ekey) {
@@ -131,14 +134,14 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 				makeBall();
 			} else {
 				//Punt the ball
-				puntBall(collidingWith);
+				puntBall();
 			}
 			break;
 		case KeyEvent.VK_Q:
 			if(collidingWith == null) {
 				System.out.println("Not touching anything!");
 			} else {
-				puntBall(collidingWith);
+				puntBall();
 			}
 			break;
 		case KeyEvent.VK_E:
@@ -223,7 +226,7 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		collidingWith = pmdl;
 	}
 	
-	private void makeBall() {
+	protected void makeBall() {
 		float [] fwd = {0.f, 0.f, -1.f};
 		Vec3f ballPos = new Vec3f(pmdl.ori().mult(fwd));
 		ballPos.add(pmdl.loc());
@@ -231,11 +234,27 @@ public class Player implements GameObject, KeyListener, MouseMotionListener, Mou
 		GameEngine.get().add(ball);
 	}
 	
-	private void puntBall(PhysicsModel ballModel) {
+	protected void puntBall() {
 		Vec3f force = new Vec3f(collidingWith.loc());
 		force.sub(pmdl.loc());
 		force.normalizeTo(PUNCH_FORCE_MAGNITUDE);
 		collidingWith.applyForce(force);
+	}
+	
+	protected void onStrafeLeft() {
+		strafeSpeed = -MOVE_SPEED;
+	}
+	
+	protected void onStrafeRight() {
+		strafeSpeed = MOVE_SPEED;
+	}
+	
+	protected void onMoveForward() {
+		forwardSpeed = -MOVE_SPEED;
+	}
+	
+	protected void onMoveBackward() {
+		forwardSpeed = MOVE_SPEED;
 	}
 
 	@Override
