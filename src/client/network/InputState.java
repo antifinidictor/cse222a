@@ -1,6 +1,8 @@
 package client.network;
 
 public class InputState {
+	private int state;
+	
 	//Bits devoted to keys
 	public static final int MOVE_FORWARD = 0x1;
 	public static final int MOVE_BACKWARD = 0x2;
@@ -11,7 +13,21 @@ public class InputState {
 	public static final int NEW_BALL = 0x40;
 	public static final int PUNT_BALL = 0x80;
 	public static final int DELETE_BALL = 0x100;
-	private int state;
+	public static final int PITCH_FORWARD = 0x200;
+	public static final int PITCH_BACKWARD = 0x400;
+	
+	public InputState() {
+		state = 0;
+	}
+	
+	//Public accessors: Use for the networking code only
+	public int getState() {
+		return state;
+	}
+	
+	public void setState(int state) {
+		this.state = state;
+	}
 	
 	public void setBit(boolean val, int bit) {
 		if(val) {

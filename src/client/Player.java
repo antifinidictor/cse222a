@@ -58,6 +58,7 @@ public abstract class Player implements GameObject, CollisionListener {
 		pmdl.setCollision(cmdl);
 		pmdl.setCollisionListener(this);
 		rmdl = null;
+		inputState = new InputState();
 	}
 
 	@Override
@@ -88,20 +89,28 @@ public abstract class Player implements GameObject, CollisionListener {
 			strafeSpeed = 0.f;
 		}
 		if(inputState.getBit(InputState.ROTATE_LEFT)) {
-			yawSpeed = -ROTATION_SPEED;
-		} else if(inputState.getBit(InputState.ROTATE_RIGHT)) {
 			yawSpeed = ROTATION_SPEED;
+		} else if(inputState.getBit(InputState.ROTATE_RIGHT)) {
+			yawSpeed = -ROTATION_SPEED;
 		} else {
 			yawSpeed = 0.f;
 		}
-		if(inputState.getBit(InputState.ROTATE_LEFT)) {
-			pitchSpeed = -ROTATION_SPEED;
-		} else if(inputState.getBit(InputState.ROTATE_RIGHT)) {
+		if(inputState.getBit(InputState.PITCH_FORWARD)) {
 			pitchSpeed = ROTATION_SPEED;
+		} else if(inputState.getBit(InputState.PITCH_BACKWARD)) {
+			pitchSpeed = -ROTATION_SPEED;
 		} else {
 			pitchSpeed = 0.f;
 		}
 		
+		//Make balls
+		if(inputState.getBit(InputState.PUNT_BALL)) {
+			puntBall();
+		} else if(inputState.getBit(InputState.DELETE_BALL)) {
+			deleteBall();
+		} else if(inputState.getBit(InputState.NEW_BALL)) {
+			makeBall();
+		}
 		
 		//rotation
 		yaw += yawSpeed;
@@ -116,10 +125,8 @@ public abstract class Player implements GameObject, CollisionListener {
 		float [] vec = {strafeSpeed, 0.f, forwardSpeed};
 		pmdl.applyForce(new Vec3f(ori.mult(vec)));
 
-    	//float[] axis = {0.f, 1.f, 0.f};
-    	//pmdl.rotateBy(new Quaternion(axis, (float) (Math.PI / 250.f)));
+		//Reset collisions
 		collidingWith = null;
-		yawSpeed = pitchSpeed = forwardSpeed = strafeSpeed = 0.f;
 	}
 
 	@Override
@@ -127,7 +134,7 @@ public abstract class Player implements GameObject, CollisionListener {
 		collidingWith = pmdl;
 	}
 	
-	protected void makeBall() {
+	private void makeBall() {
 		float [] fwd = {0.f, 0.f, -1.f};
 		Vec3f ballPos = new Vec3f(pmdl.ori().mult(fwd));
 		ballPos.add(pmdl.loc());
@@ -135,44 +142,26 @@ public abstract class Player implements GameObject, CollisionListener {
 		GameEngine.get().add(ball);
 	}
 	
-	protected void puntBall() {
+	private void puntBall() {
+		if(!collidingWithObject()) {
+			System.out.println("ERROR: Could not punt: Not colliding with ball!");
+			return;
+		}
 		Vec3f force = new Vec3f(collidingWith.loc());
 		force.sub(pmdl.loc());
 		force.normalizeTo(PUNCH_FORCE_MAGNITUDE);
 		collidingWith.applyForce(force);
 	}
 	
-	protected void onStrafeLeft() {
-		strafeSpeed = -MOVE_SPEED;
-	}
-
-	protected void onStrafeRight() {
-		strafeSpeed = MOVE_SPEED;
-	}
-
-	protected void onMoveForward() {
-		forwardSpeed = -MOVE_SPEED;
-	}
-
-	protected void onMoveBackward() {
-		forwardSpeed = MOVE_SPEED;
-	}
-
-	protected void onRotateLeft() {
-		yawSpeed = ROTATION_SPEED;
-	}
-
-	protected void onRotateRight() {
-		yawSpeed = -ROTATION_SPEED;
+	private void deleteBall() {
+		if(!collidingWithObject()) {
+			System.out.println("ERROR: Could not punt: Not colliding with ball!");
+			return;
+		}
+		//GameEngine.get().remove(collidingWith);
+		//collidingWith = null;
 	}
 	
-	protected void onPitchUp() {
-		pitchSpeed = ROTATION_SPEED;
-	}
-	
-	protected void onPitchDown() {
-		pitchSpeed = -ROTATION_SPEED;
-	}
 	
 	protected boolean collidingWithObject() {
 		return collidingWith != null;

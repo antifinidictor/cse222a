@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import shared.Vec3f;
+import client.network.InputState;
 import client.physics.CapsuleCollisionModel;
 import client.physics.CollisionListener;
 import client.physics.PhysicsModel;
@@ -28,7 +29,8 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 	private float lastCamX;
 	private float lastCamY;
 	
-	boolean forward, backward, left, right, shift;
+	boolean forward, backward, left, right, shift;	//movement keys
+	boolean puntBall, makeBall, deleteBall;			//ball keys
 
 	private Camera camera;
 
@@ -43,33 +45,28 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 
 	@Override
 	public void onUpdate() {
-		if(forward) {
-			if(shift) {
-				this.onPitchUp();
-			} else {
-				this.onMoveForward();
-			}
-		} else if(backward) {
-			if(shift) {
-				this.onPitchDown();
-			} else {
-				this.onMoveBackward();
-			}
-		}
-		if(left) {
-			if(shift) {
-				this.onStrafeLeft();
-			} else {
-				this.onRotateLeft();
-			}
-		} else if(right) {
-			if(shift) {
-				this.onStrafeRight();
-			} else {
-				this.onRotateRight();
-			}
-		}
+		//update input state
+		inputState.setBit(forward 	&& !shift, InputState.MOVE_FORWARD);
+		inputState.setBit(backward 	&& !shift, InputState.MOVE_BACKWARD);
+		inputState.setBit(left 		&& !shift, InputState.ROTATE_LEFT);
+		inputState.setBit(right 	&& !shift, InputState.ROTATE_RIGHT);
+		inputState.setBit(forward 	&&  shift, InputState.PITCH_FORWARD);
+		inputState.setBit(backward 	&&  shift, InputState.PITCH_BACKWARD);
+		inputState.setBit(left 		&&  shift, InputState.STRAFE_LEFT);
+		inputState.setBit(right 	&&  shift, InputState.STRAFE_RIGHT);
+		
+		inputState.setBit(puntBall, InputState.PUNT_BALL);
+		inputState.setBit(makeBall, InputState.NEW_BALL);
+		inputState.setBit(deleteBall, InputState.DELETE_BALL);
+		
+		//update physics and logic
 		super.onUpdate();
+		
+		//update network state
+		
+		//These can only occur once per round
+		inputState.setBit(false, InputState.PUNT_BALL | InputState.NEW_BALL | InputState.DELETE_BALL);
+		puntBall = makeBall = deleteBall = false;
 	}
 
 	@Override
@@ -117,22 +114,24 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 			break;
 		case KeyEvent.VK_SPACE:
 			if(collidingWithObject()) {
-				//Punt the ball
-				puntBall();
+				puntBall = true;
 			} else {
-				//Make a new ball
-				makeBall();
+				makeBall = true;
 			}
 			break;
 		case KeyEvent.VK_Q:
 			if(collidingWithObject()) {
-				puntBall();
+				puntBall = true;
 			} else {
-				System.out.println("Not touching anything!");
+				System.out.println("Not touching anything (cannot punt)!");
 			}
 			break;
 		case KeyEvent.VK_E:
-			makeBall();
+			if(collidingWithObject()) {
+				deleteBall = true;
+			} else {
+				System.out.println("Not touching anything (cannot delete)!");
+			}
 			break;
 		case KeyEvent.VK_ESCAPE:
 			//Lose focus, bring the mouse back
