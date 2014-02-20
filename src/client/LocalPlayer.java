@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.nio.ByteBuffer;
 
 import shared.Vec3f;
 import client.physics.CapsuleCollisionModel;
@@ -206,5 +207,76 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 		// TODO Auto-generated method stub
 		//System.out.println("Mouse released");
 		
+	}
+
+	@Override
+	public int serializeAll(ByteBuffer buf) {
+		//Gather state information
+		Vec3f pos = getPhysics().loc();
+		Quaternion ori = getPhysics().ori();
+		int initBufPos = buf.position();
+		
+		//Serialize input state
+		buf.putInt(inputState.getState());
+		
+		//Serialize location
+		buf.putFloat(pos.x());
+		buf.putFloat(pos.y());
+		buf.putFloat(pos.z());
+		
+		//Serialize orientation
+		buf.putFloat(ori.getW());
+		buf.putFloat(ori.getX());
+		buf.putFloat(ori.getY());
+		buf.putFloat(ori.getZ());
+		
+		//Serialize velocity?
+		
+		//Return the number of bytes placed in the buffer
+		return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int serializeInput(ByteBuffer buf) {
+		int initBufPos = buf.position();
+		buf.putInt(inputState.getState());
+		return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int deserializeAll(ByteBuffer buf) {
+		//Gather state information
+		Vec3f pos = new Vec3f(0.f, 0.f, 0.f);
+		Quaternion ori = new Quaternion();
+		int initBufPos = buf.position();
+		
+		//Deserialize input state: Do not use, just remove from the buffer
+		buf.getInt();
+		
+		//Deserialize location
+		pos.x(buf.getFloat());
+		pos.y(buf.getFloat());
+		pos.z(buf.getFloat());
+		
+		//Deserialize orientation
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		
+		//Deserialize velocity?
+		
+		getPhysics().moveTo(pos);
+		getPhysics().rotateTo(ori);
+		
+		//Return the number of bytes removed from the buffer
+		return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int deserializeInput(ByteBuffer buf) {
+		int initBufPos = buf.position();
+		buf.getInt();	//Do not use, just remove from the buffer
+		return buf.position() - initBufPos;
 	}
 }
