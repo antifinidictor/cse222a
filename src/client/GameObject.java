@@ -1,5 +1,6 @@
 package client;
 
+import client.network.NetworkObject;
 import client.physics.PhysicsModel;
 import client.render.RenderModel;
 
@@ -8,7 +9,7 @@ import client.render.RenderModel;
  * @author Nathan Heisey
  *
  */
-public interface GameObject {
+public interface GameObject extends NetworkObject {
 	public PhysicsModel getPhysics();
 	public RenderModel  getRender();
 	public void onUpdate();	//Update event callback

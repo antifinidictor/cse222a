@@ -171,6 +171,11 @@ public abstract class Player implements GameObject, CollisionListener {
 		return id;
 	}
 	
+	//Use when the player disconnects and needs to reconnect
+	public void setID(int id) {
+		this.id = id;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof GameObject) && ((((GameObject)obj)).getID() == getID());

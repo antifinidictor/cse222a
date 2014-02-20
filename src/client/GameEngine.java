@@ -4,17 +4,17 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import shared.Box;
 import shared.Vec3f;
+import client.network.ClientNetworkEngine;
+import client.physics.PhysicsEngine;
+import client.render.RenderEngine;
 
 import com.jogamp.opengl.math.Quaternion;
-
-import client.physics.PhysicsEngine;
-import client.physics.PhysicsModel;
-import client.render.HmapRenderModel;
-import client.render.RenderEngine;
 
 public class GameEngine {
 
@@ -25,6 +25,7 @@ public class GameEngine {
 		GameEngine.init();
 		RenderEngine.init();
 		PhysicsEngine.init();
+		ClientNetworkEngine.init();
 		GameEngine.get().run();
 	}
 	
@@ -70,6 +71,7 @@ public class GameEngine {
 			if(obj.getRender() != null) {
 				RenderEngine.get().add(obj.getRender());
 			}
+			ClientNetworkEngine.get().add(obj);
 			objs.add(obj);
 		}
 		objsToAdd.clear();
@@ -83,7 +85,9 @@ public class GameEngine {
 			if(obj.getRender() != null) {
 				RenderEngine.get().remove(obj.getRender());
 			}
+			ClientNetworkEngine.get().remove(obj);
 			objs.remove(obj);
+			freeID(obj.getID());	//presumably this object is dead
 		}
 		objsToRemove.clear();
 	}
@@ -151,7 +155,32 @@ public class GameEngine {
         });
 	}
 	
-	public int genID() { return nextID++; }
+	public int genID() {
+		if(freeIds.isEmpty()) {
+			return nextID++; 
+		} else {
+			return freeIds.remove();
+		}
+	}
+	
+	public void freeID(int id) {
+		freeIds.add(id);
+	}
+	
+	public int requestID(int id) {
+		//IDs we skipped over should be added to the queue
+		while(nextID <= id) {
+			freeIds.add(nextID++);
+		}
+		
+		//Otherwise try to remove from the queue (a little inefficient but hopefully not too bad
+		if(freeIds.remove(id)) {
+			return id;
+		} else {
+			System.out.println("ERROR: Tried to reuse id " + id + "! (replacing with id " + nextID + ")");
+			return nextID++;
+		}
+	}
 	
 	public Frame getWindow() { return window; }
 
@@ -160,6 +189,7 @@ public class GameEngine {
 	private List<GameObject> objs = new ArrayList();
 	private List<GameObject> objsToAdd = new ArrayList();
 	private List<GameObject> objsToRemove = new ArrayList();
+	private Queue<Integer> freeIds = new LinkedList();
 	private int nextID = 0;
 	
 	private static GameEngine instance = null;

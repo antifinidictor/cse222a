@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public interface TheNetwork {
 	
-	/* This will be passed the aggregated user input, so parse through it t get individual input events.*/
+	/* This will be passed the aggregated user input, so parse through it to get individual input events.*/
 	public void updateState(byte[] buf);
     
 	/*This returns the entire state serialized.*/
