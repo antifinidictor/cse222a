@@ -53,8 +53,19 @@ public class ClientNetworkEngine implements TheNetwork {
 	/* This will be passed the aggregated user input, so parse through it to get individual input events.*/
 	@Override
 	public void updateState(byte[] buf) {
-		// TODO Auto-generated method stub
-		
+		ByteBuffer wrapped = null;	//TODO: Remove discrepancy between ByteBuffer and state
+		while(wrapped.position() < wrapped.limit()) {
+			//Pull out the next object id
+			int id = wrapped.getInt();
+			byte type = wrapped.get();
+			NetworkObject obj = find(id);
+			if(obj == null) {
+				//TODO: Create the object?
+			} else {
+				//Update the object
+				obj.deserializeInput(wrapped);
+			}
+		}
 	}
 
 	/*This returns the entire state serialized.*/

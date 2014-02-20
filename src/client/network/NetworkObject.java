@@ -12,7 +12,7 @@ public interface NetworkObject {
 	public int getID();
 	public byte getType();
 
-	//Network methods
+	//Network methods.  None of them serialize the object's id and type.
 	/* Serializes this object's state into the buffer at index startIndex, returning the number of bytes used */
 	public int serializeAll(ByteBuffer buf);
 	

@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import shared.Vec3f;
+import client.network.NetworkObject;
 import client.physics.CapsuleCollisionModel;
 import client.physics.CollisionListener;
 import client.physics.PhysicsModel;
@@ -174,6 +175,11 @@ public abstract class Player implements GameObject, CollisionListener {
 	//Use when the player disconnects and needs to reconnect
 	public void setID(int id) {
 		this.id = id;
+	}
+	
+	@Override
+	public byte getType() {
+		return NetworkObject.PLAYER;
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package client;
 
 import com.jogamp.opengl.math.Quaternion;
 
+import client.network.NetworkObject;
 import client.physics.HmapCollisionModel;
 import client.physics.PhysicsModel;
 import client.render.HmapRenderModel;
@@ -40,6 +41,11 @@ public class Landscape implements GameObject {
 	@Override
 	public int getID() {
 		return id;
+	}
+	
+	@Override
+	public byte getType() {
+		return NetworkObject.LANDSCAPE;
 	}
 	
 	@Override

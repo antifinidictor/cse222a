@@ -3,6 +3,7 @@ package client;
 import com.jogamp.opengl.math.Quaternion;
 
 import shared.Vec3f;
+import client.network.NetworkObject;
 import client.physics.PhysicsModel;
 import client.physics.SphereCollisionModel;
 import client.render.RenderModel;
@@ -46,6 +47,11 @@ public class Ball implements GameObject {
 	@Override
 	public int getID() {
 		return id;
+	}
+	
+	@Override
+	public byte getType() {
+		return NetworkObject.BALL;
 	}
 	
 	@Override
