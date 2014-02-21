@@ -1,4 +1,7 @@
+
 package client;
+
+import java.nio.ByteBuffer;
 
 import com.jogamp.opengl.math.Quaternion;
 
@@ -57,5 +60,60 @@ public class Ball implements GameObject {
 	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof GameObject) && ((((GameObject)obj)).getID() == getID());
+	}
+
+	@Override
+	public int serializeAll(ByteBuffer buf) {
+		 Vec3f pos = getPhysics().loc();
+			Quaternion ori = getPhysics().ori();
+			int initBufPos = buf.position();
+			
+			//no input state? 
+			
+			buf.putFloat(pos.x());
+			buf.putFloat(pos.y());
+			buf.putFloat(pos.z());
+			
+			buf.putFloat(ori.getW());
+			buf.putFloat(ori.getX());
+			buf.putFloat(ori.getY());
+			buf.putFloat(ori.getZ());
+							
+			return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int serializeInput(ByteBuffer buf) {
+		// no serialize input
+		return 0;
+	}
+
+	@Override
+	public int deserializeAll(ByteBuffer buf) {
+		Vec3f pos = new Vec3f(0.f, 0.f, 0.f);
+		Quaternion ori = new Quaternion();
+		int initBufPos = buf.position();
+		
+        //no input state to get?
+		
+		pos.x(buf.getFloat());
+		pos.y(buf.getFloat());
+		pos.z(buf.getFloat());
+		
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+						
+		getPhysics().moveTo(pos);
+		getPhysics().rotateTo(ori);
+		
+		return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int deserializeInput(ByteBuffer buf) {
+		// no deserialize input
+		return 0;
 	}
 }
