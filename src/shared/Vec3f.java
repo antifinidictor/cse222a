@@ -1,6 +1,22 @@
 package shared;
 
 public class Vec3f {
+	public float x() { return vec[X]; }
+	public float y() { return vec[Y]; }
+	public float z() { return vec[Z]; }
+	
+	public void x(float x) { vec[X] = x; }
+	public void y(float y) { vec[Y] = y; }
+	public void z(float z) { vec[Z] = z; }
+	
+	public float[] toVector() { return vec; }
+	
+	public static final int X = 0;
+	public static final int Y = 1;
+	public static final int Z = 2;
+	
+	private float [] vec;
+	
 	public Vec3f(final Vec3f src) {
 		vec = new float[3];
 		copy(src);
@@ -96,20 +112,4 @@ public class Vec3f {
 	public String toString() {
 		return "(" + x() + "," + y() + "," + z() + ")";
 	}
-	
-	public float x() { return vec[X]; }
-	public float y() { return vec[Y]; }
-	public float z() { return vec[Z]; }
-	
-	public void x(float x) { vec[X] = x; }
-	public void y(float y) { vec[Y] = y; }
-	public void z(float z) { vec[Z] = z; }
-	
-	public float[] toVector() { return vec; }
-	
-	public static final int X = 0;
-	public static final int Y = 1;
-	public static final int Z = 2;
-	
-	private float [] vec;
 }

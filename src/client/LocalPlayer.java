@@ -97,6 +97,21 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 	@Override
 	public void keyReleased(KeyEvent ekey) {
 		switch(ekey.getKeyCode()) {
+		case KeyEvent.VK_F1:
+			runTest1();	//Run some test
+			break;
+		case KeyEvent.VK_F2:
+			runTest2();	//Run some test
+			break;
+		case KeyEvent.VK_F3:
+			runTest3();	//Run some test
+			break;
+		case KeyEvent.VK_F4:
+			runTest4();	//Run some test
+			break;
+		case KeyEvent.VK_F5:
+			runTest5();	//Run some test
+			break;
 		case KeyEvent.VK_W:
 			forward = false;
 			break;
@@ -278,5 +293,36 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 		int initBufPos = buf.position();
 		buf.getInt();	//Do not use, just remove from the buffer
 		return buf.position() - initBufPos;
+	}
+	
+	private void runTest1() {
+		byte [] arr = new byte[256];
+		ByteBuffer buf = ByteBuffer.wrap(arr);
+		System.out.println("Bytes serialized: " + serializeAll(buf));
+		for(int i = 0; i < 256; ++i) {
+			System.out.print(arr[i] + " ");
+		}
+		System.out.println();
+		Quaternion ori = getPhysics().ori();
+		System.out.println(getPhysics().loc() + ", (" + ori.getW() + ", " + ori.getX() + ", " + ori.getY() + ", " + ori.getZ() + ")");
+		System.out.println("Bytes deserialized: " + deserializeAll(buf));
+		for(int i = 0; i < 256; ++i) {
+			System.out.print(arr[i] + " ");
+		}
+		System.out.println();
+		ori = getPhysics().ori();
+		System.out.println(getPhysics().loc() + ", (" + ori.getW() + ", " + ori.getX() + ", " + ori.getY() + ", " + ori.getZ() + ")");
+	}
+	private void runTest2() {
+		
+	}
+	private void runTest3() {
+		
+	}
+	private void runTest4() {
+		
+	}
+	private void runTest5() {
+		
 	}
 }

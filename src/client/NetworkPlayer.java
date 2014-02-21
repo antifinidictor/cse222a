@@ -1,6 +1,7 @@
 package client;
 
 import java.awt.Color;
+import java.nio.ByteBuffer;
 
 import shared.Vec3f;
 
@@ -111,5 +112,29 @@ public class NetworkPlayer extends Player {
 		} else {
 			animTimer++;
 		}
+	}
+
+	@Override
+	public int serializeAll(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int serializeInput(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int deserializeAll(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int deserializeInput(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

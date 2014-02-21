@@ -1,5 +1,7 @@
 package client;
 
+import java.nio.ByteBuffer;
+
 import com.jogamp.opengl.math.Quaternion;
 
 import shared.Vec3f;
@@ -57,5 +59,29 @@ public class Ball implements GameObject {
 	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof GameObject) && ((((GameObject)obj)).getID() == getID());
+	}
+
+	@Override
+	public int serializeAll(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int serializeInput(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int deserializeAll(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int deserializeInput(ByteBuffer buf) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

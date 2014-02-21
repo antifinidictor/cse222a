@@ -123,7 +123,7 @@ public class GameEngine {
 			.5f,	//radius
 			RenderEngine.get().getTexture(texID)
 		);
-		add(ball);
+		//add(ball);
 		
 		texID = RenderEngine.get().makeTexture("res/player.png", 8, 20);
 		NetworkPlayer netPlayer = new NetworkPlayer(
