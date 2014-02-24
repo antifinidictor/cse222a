@@ -266,7 +266,7 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 		int initBufPos = buf.position();
 		
 		//Deserialize input state: Do not use, just remove from the buffer
-		buf.getInt();
+		int info = buf.getInt();
 		
 		//Deserialize location
 		pos.x(buf.getFloat());
@@ -298,15 +298,19 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 	private void runTest1() {
 		byte [] arr = new byte[256];
 		ByteBuffer buf = ByteBuffer.wrap(arr);
-		System.out.println("Bytes serialized: " + serializeAll(buf));
-		for(int i = 0; i < 256; ++i) {
+		int numBytes = serializeAll(buf);
+		System.out.println("Bytes serialized: " + numBytes);
+		for(int i = 0; i < numBytes; ++i) {
 			System.out.print(arr[i] + " ");
 		}
 		System.out.println();
 		Quaternion ori = getPhysics().ori();
 		System.out.println(getPhysics().loc() + ", (" + ori.getW() + ", " + ori.getX() + ", " + ori.getY() + ", " + ori.getZ() + ")");
-		System.out.println("Bytes deserialized: " + deserializeAll(buf));
-		for(int i = 0; i < 256; ++i) {
+		
+		buf = ByteBuffer.wrap(arr);	//Rewrap & reset the bytebuffer
+		numBytes = deserializeAll(buf);
+		System.out.println("Bytes deserialized: " + numBytes);
+		for(int i = 0; i < numBytes; ++i) {
 			System.out.print(arr[i] + " ");
 		}
 		System.out.println();
