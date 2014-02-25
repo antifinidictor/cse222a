@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.nio.ByteBuffer;
 
 import shared.Vec3f;
 import client.physics.CapsuleCollisionModel;
@@ -96,6 +97,21 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 	@Override
 	public void keyReleased(KeyEvent ekey) {
 		switch(ekey.getKeyCode()) {
+		case KeyEvent.VK_F1:
+			runTest1();	//Run some test
+			break;
+		case KeyEvent.VK_F2:
+			runTest2();	//Run some test
+			break;
+		case KeyEvent.VK_F3:
+			runTest3();	//Run some test
+			break;
+		case KeyEvent.VK_F4:
+			runTest4();	//Run some test
+			break;
+		case KeyEvent.VK_F5:
+			runTest5();	//Run some test
+			break;
 		case KeyEvent.VK_W:
 			forward = false;
 			break;
@@ -205,6 +221,112 @@ public class LocalPlayer extends Player implements KeyListener, MouseMotionListe
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		//System.out.println("Mouse released");
+		
+	}
+
+	@Override
+	public int serializeAll(ByteBuffer buf) {
+		//Gather state information
+		Vec3f pos = getPhysics().loc();
+		Quaternion ori = getPhysics().ori();
+		int initBufPos = buf.position();
+		
+		//Serialize input state
+		buf.putInt(inputState.getState());
+		
+		//Serialize location
+		buf.putFloat(pos.x());
+		buf.putFloat(pos.y());
+		buf.putFloat(pos.z());
+		
+		//Serialize orientation
+		buf.putFloat(ori.getW());
+		buf.putFloat(ori.getX());
+		buf.putFloat(ori.getY());
+		buf.putFloat(ori.getZ());
+		
+		//Serialize velocity?
+		
+		//Return the number of bytes placed in the buffer
+		return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int serializeInput(ByteBuffer buf) {
+		int initBufPos = buf.position();
+		buf.putInt(inputState.getState());
+		return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int deserializeAll(ByteBuffer buf) {
+		//Gather state information
+		Vec3f pos = new Vec3f(0.f, 0.f, 0.f);
+		Quaternion ori = new Quaternion();
+		int initBufPos = buf.position();
+		
+		//Deserialize input state: Do not use, just remove from the buffer
+		int info = buf.getInt();
+		
+		//Deserialize location
+		pos.x(buf.getFloat());
+		pos.y(buf.getFloat());
+		pos.z(buf.getFloat());
+		
+		//Deserialize orientation
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		ori.setW(buf.getFloat());
+		
+		//Deserialize velocity?
+		
+		getPhysics().moveTo(pos);
+		getPhysics().rotateTo(ori);
+		
+		//Return the number of bytes removed from the buffer
+		return buf.position() - initBufPos;
+	}
+
+	@Override
+	public int deserializeInput(ByteBuffer buf) {
+		int initBufPos = buf.position();
+		buf.getInt();	//Do not use, just remove from the buffer
+		return buf.position() - initBufPos;
+	}
+	
+	private void runTest1() {
+		byte [] arr = new byte[256];
+		ByteBuffer buf = ByteBuffer.wrap(arr);
+		int numBytes = serializeAll(buf);
+		System.out.println("Bytes serialized: " + numBytes);
+		for(int i = 0; i < numBytes; ++i) {
+			System.out.print(arr[i] + " ");
+		}
+		System.out.println();
+		Quaternion ori = getPhysics().ori();
+		System.out.println(getPhysics().loc() + ", (" + ori.getW() + ", " + ori.getX() + ", " + ori.getY() + ", " + ori.getZ() + ")");
+		
+		buf = ByteBuffer.wrap(arr);	//Rewrap & reset the bytebuffer
+		numBytes = deserializeAll(buf);
+		System.out.println("Bytes deserialized: " + numBytes);
+		for(int i = 0; i < numBytes; ++i) {
+			System.out.print(arr[i] + " ");
+		}
+		System.out.println();
+		ori = getPhysics().ori();
+		System.out.println(getPhysics().loc() + ", (" + ori.getW() + ", " + ori.getX() + ", " + ori.getY() + ", " + ori.getZ() + ")");
+	}
+	private void runTest2() {
+		
+	}
+	private void runTest3() {
+		
+	}
+	private void runTest4() {
+		
+	}
+	private void runTest5() {
 		
 	}
 }

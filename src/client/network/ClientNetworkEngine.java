@@ -17,6 +17,7 @@ public class ClientNetworkEngine implements TheNetwork {
 	private Player player = null;
 	//private int clientID = -1;
 	private Set<NetworkObject> objs;
+	private static final int BUFFER_SIZE = 256;
 	
 	private static ClientNetworkEngine instance;
 	
@@ -53,7 +54,7 @@ public class ClientNetworkEngine implements TheNetwork {
 	/* This will be passed the aggregated user input, so parse through it to get individual input events.*/
 	@Override
 	public void updateState(byte[] buf) {
-		ByteBuffer wrapped = null;	//TODO: Remove discrepancy between ByteBuffer and state
+		ByteBuffer wrapped = ByteBuffer.wrap(buf);
 		while(wrapped.position() < wrapped.limit()) {
 			//Pull out the next object id
 			int id = wrapped.getInt();
@@ -71,7 +72,7 @@ public class ClientNetworkEngine implements TheNetwork {
 	/*This returns the entire state serialized.*/
 	@Override
 	public byte[] getState() {
-		ByteBuffer buf = null;	//TODO: Make into a real thing
+		ByteBuffer buf = ByteBuffer.allocate(BUFFER_SIZE);
 		for(NetworkObject obj : objs) {
 			buf.putInt(obj.getID());
 			buf.put(obj.getType());
@@ -80,7 +81,7 @@ public class ClientNetworkEngine implements TheNetwork {
 		return buf.array();
 	}
 	
-	/*This, given a serialized state, replaces the entire state with the given one. 
+	/* This, given a serialized state, replaces the entire state with the given one. 
 	 * TODO: Handle objects that exist in this client, but not in the provided state. */
 	@Override
 	public void decodeState(ByteBuffer wrapped) {
